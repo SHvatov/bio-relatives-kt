@@ -46,7 +46,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * TODO: provide thread pool
      * TODO: log occurring exceptions in exception handler
      */
-    protected val dispatcherScope = CoroutineScope(
+    private val processorScope = CoroutineScope(
         CoroutineName("Dispatcher-${UUID.randomUUID()}") +
             Dispatchers.Default +
             CoroutineExceptionHandler { _, _ -> Unit }
@@ -55,7 +55,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
     /**
      * Actor which is responsible for the dispatching of the incoming tasks to sub-processors.
      */
-    private val dispatcher = dispatcherScope.actor<ProcessorAction>(
+    private val dispatcher = processorScope.actor<ProcessorAction>(
         capacity = DISPATCHER_CHANNEL_CAPACITY
     ) {
         consumeEach { dispatch(it) }
@@ -67,7 +67,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * processing.
      */
     fun process(timeout: Long? = null): ReceiveChannel<R> {
-        dispatcherScope.launch {
+        processorScope.launch {
             inputChannel.consumeEach {
                 dispatcher.send(
                     ProcessorAction(it, timeout)
@@ -115,6 +115,10 @@ abstract class AbstractProcessor<P : Any, R : Any>(
         throw IllegalStateException("Unable to dispatch an assembly task - out of retries!")
     }
 
+    /**
+     * Used to create instances of [SubProcessor], that are defined in sub-classes
+     * and specify the processing logic.
+     */
     protected abstract fun makeSubProcessor(): SubProcessor
 
     /**
@@ -129,7 +133,10 @@ abstract class AbstractProcessor<P : Any, R : Any>(
         private var _processed: Long = 0L
         val processed: Long get() = _processed
 
-        private val processor = dispatcherScope.actor<ProcessorAction>(
+        /**
+         * Actor which is responsible for the processing of the incoming tasks.
+         */
+        private val processor = processorScope.actor<ProcessorAction>(
             capacity = CHILD_CHANNEL_CAPACITY
         ) {
             consumeEach {
@@ -149,10 +156,19 @@ abstract class AbstractProcessor<P : Any, R : Any>(
             }
         }
 
+        /**
+         * Contains the processing logic of the provided [payload].
+         */
         protected abstract suspend fun process(payload: P): R
 
+        /**
+         * Internal processing function, used to put [action] into the queue.
+         */
         internal suspend fun process(action: ProcessorAction) = processor.send(action)
 
+        /**
+         * Closes the actor.
+         */
         override fun close() {
             processor.close()
         }

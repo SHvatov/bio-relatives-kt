@@ -6,5 +6,5 @@ import java.nio.file.Path
  * @author shvatov
  */
 interface RegionParserFactory {
-    fun create(bamFilePath: Path): FeatureParser
+    fun create(bamFilePath: Path): RegionParser
 }

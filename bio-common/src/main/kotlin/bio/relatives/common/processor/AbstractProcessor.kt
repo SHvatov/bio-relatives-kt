@@ -145,9 +145,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
                 val (payload, timeout) = it.unpack<P>()
                 withTimeout(timeout) {
                     outputChannel.send(
-                        process(
-                            payload
-                        )
+                        process(this, payload)
                     )
                 }
 
@@ -157,9 +155,10 @@ abstract class AbstractProcessor<P : Any, R : Any>(
         }
 
         /**
-         * Contains the processing logic of the provided [payload].
+         * Contains the processing logic of the provided [payload] in [parentScope]
+         * of the parent actor.
          */
-        protected abstract suspend fun process(payload: P): R
+        protected abstract suspend fun process(parentScope: CoroutineScope, payload: P): R
 
         /**
          * Internal processing function, used to put [action] into the queue.

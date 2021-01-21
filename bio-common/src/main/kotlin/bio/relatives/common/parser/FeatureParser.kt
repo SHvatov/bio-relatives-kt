@@ -5,6 +5,6 @@ import bio.relatives.common.model.Feature
 /**
  * @author shvatov
  */
-interface FeatureParser {
+interface FeatureParser : AutoCloseable {
     fun parseFeatures(): List<Feature>
 }

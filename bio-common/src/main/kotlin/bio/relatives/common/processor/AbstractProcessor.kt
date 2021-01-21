@@ -46,7 +46,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * TODO: provide thread pool
      * TODO: log occurring exceptions in exception handler
      */
-    private val dispatcherScope = CoroutineScope(
+    protected val dispatcherScope = CoroutineScope(
         CoroutineName("Dispatcher-${UUID.randomUUID()}") +
             Dispatchers.Default +
             CoroutineExceptionHandler { _, _ -> Unit }

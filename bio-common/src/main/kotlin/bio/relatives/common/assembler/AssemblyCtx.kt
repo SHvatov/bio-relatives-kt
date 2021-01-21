@@ -2,6 +2,7 @@ package bio.relatives.common.assembler
 
 import bio.relatives.common.parser.RegionParserFactory
 import java.nio.file.Path
+import java.util.UUID
 
 /**
  * @author shvatov
@@ -16,7 +17,7 @@ interface AssemblyCtx {
      * Set of paths to the BAM files used as reference data for
      * the genome assembly.
      */
-    val bamFilePaths: Set<Path>
+    val bamFilePaths: Map<UUID, Path>
 
     /**
      * Factory, which is used to create [RegionParser] instances.

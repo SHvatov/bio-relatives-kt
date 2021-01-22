@@ -1,14 +1,15 @@
 package bio.relatives.common.processor
 
 import bio.relatives.common.assembler.AssemblyCtx
+import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.parser.RegionParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.channels.ReceiveChannel
 import java.util.UUID
 
 /**
@@ -17,39 +18,37 @@ import java.util.UUID
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 class AssemblyProcessor(
-    private val assemblyCtx: AssemblyCtx,
-    inputChannel: ReceiveChannel<Feature>
-) : AbstractProcessor<Feature, RegionBatch>(inputChannel) {
-    override fun makeSubProcessor() = object : SubProcessor() {
+    private val assemblyCtx: AssemblyCtx
+) : AbstractProcessor<Feature, RegionBatch>() {
+    /**
+     * Utils data class, which is used to store parser and assembler that
+     * are associated with one of the people we are workng with.
+     */
+    private data class AssemblyTool(
+        val parser: RegionParser,
+        val assembler: RegionAssembler
+    )
+
+    override fun makeSubProcessor() = object : AbstractSubProcessor() {
         /**
          * List of identifiers of the people, whose genomes we are working with.
          */
-        private val personIdentifiers = with(assemblyCtx) {
-            bamFilePaths.map { it.key }
-        }
+        private val identifiers = assemblyCtx.bamFilePaths.keys
 
         /**
-         * Map of [RegionParser] instances grouped by identifier of the person
-         * they are associated with.
+         * Map of the tools grouped by the id of the person the are related to.
          */
-        private val regionParsersByPerson = with(assemblyCtx) {
-            bamFilePaths
-                .map { (id, path) -> regionParserFactory.create(id, path) }
-                .associateBy { it.personIdentifier }
-        }
-
-        /**
-         * Map of [RegionAssembler] instances grouped by identifier of the person
-         * they are associated with.
-         */
-        private val regionAssemblersByPerson = with(assemblyCtx) {
-            bamFilePaths
-                .map { (id, path) -> regionAssemblerFactory.create(id, path) }
-                .associateBy { it.personIdentifier }
+        private val assemblyToolsById = with(assemblyCtx) {
+            bamFilePaths.mapValues { (_, path) ->
+                AssemblyTool(
+                    parser = regionParserFactory.create(path),
+                    assembler = regionAssemblerFactory.create()
+                )
+            }
         }
 
         override suspend fun process(parentScope: CoroutineScope, payload: Feature): RegionBatch {
-            val assemblyResults = personIdentifiers.map {
+            val assemblyResults = identifiers.map {
                 parentScope.async {
                     assemble(it, payload)
                 }
@@ -57,22 +56,18 @@ class AssemblyProcessor(
 
             return assemblyResults
                 .map { it.await() }
-                .associateBy { it.personIdentifier }
+                .associateBy { it.identifier }
                 .toMap(RegionBatch())
         }
 
         /**
-         * Synchronously assembles one region of the genome of the person with [personIdentifier]
+         * Synchronously assembles one region of the genome of the person with [identifier]
          * using the provided [feature].
          */
-        private fun assemble(personIdentifier: UUID, feature: Feature): Region {
-            val records = regionParsersByPerson
-                .getValue(personIdentifier)
-                .parseRegion(feature)
-
-            return regionAssemblersByPerson
-                .getValue(personIdentifier)
-                .assemble(feature, records)
+        private fun assemble(identifier: UUID, feature: Feature): Region {
+            val (parser, assembler) = assemblyToolsById[identifier]!!
+            val records = parser.parseRegion(feature)
+            return assembler.assemble(feature, records)
         }
     }
 }

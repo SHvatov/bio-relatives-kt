@@ -9,13 +9,13 @@ import java.util.UUID
  * @author shvatov
  */
 data class Region(
-    override val personIdentifier: UUID = UUID.randomUUID(),
+    override val identifier: UUID = UUID.randomUUID(),
     override val sequence: String,
     override val chromosome: String,
     override val gene: String,
     override val start: Long,
     override val end: Long
-) : NucleotideSequenceAware, ChromosomeAware, ChromosomePositionAware, PersonAware {
+) : NucleotideSequenceAware, ChromosomeAware, ChromosomePositionAware, IdentifierAware {
     init {
         validateChrom(this)
         validateChromPosition(this)

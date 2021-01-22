@@ -14,8 +14,8 @@ interface AssemblyCtx {
     val featureFilePath: Path
 
     /**
-     * Set of paths to the BAM files used as reference data for
-     * the genome assembly.
+     * Set of paths to the BAM files used as reference data for the genome assembly
+     * mapped by the unique id of the person whom they belong.
      */
     val bamFilePaths: Map<UUID, Path>
 

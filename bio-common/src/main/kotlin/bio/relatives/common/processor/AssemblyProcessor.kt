@@ -60,6 +60,11 @@ class AssemblyProcessor(
                 .toMap(RegionBatch())
         }
 
+        override fun close() {
+            assemblyToolsById.values.forEach { it.parser.close() }
+            super.close()
+        }
+
         /**
          * Synchronously assembles one region of the genome of the person with [identifier]
          * using the provided [feature].

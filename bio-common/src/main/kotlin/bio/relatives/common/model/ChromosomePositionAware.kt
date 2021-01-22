@@ -4,7 +4,7 @@ package bio.relatives.common.model
  * @author shvatov
  */
 interface ChromosomePositionAware {
-    val start: Long
+    val start: Int
 
-    val end: Long
+    val end: Int
 }

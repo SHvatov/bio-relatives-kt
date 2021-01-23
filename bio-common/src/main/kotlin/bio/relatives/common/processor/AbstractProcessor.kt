@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -81,7 +82,8 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * the processing of the incoming tasks.
      */
     private val dispatcher = scope.actor<ProcessorAction>(
-        capacity = DISPATCHER_CHANNEL_CAPACITY
+        capacity = DISPATCHER_CHANNEL_CAPACITY,
+        start = CoroutineStart.LAZY
     ) {
         val children: MutableList<AbstractSubProcessor> = mutableListOf()
         consumeEach { action ->
@@ -163,7 +165,8 @@ abstract class AbstractProcessor<P : Any, R : Any>(
          * Actor which is responsible for the processing of the incoming tasks.
          */
         private val processor = scope.actor<ProcessorAction>(
-            capacity = CHILD_CHANNEL_CAPACITY
+            capacity = CHILD_CHANNEL_CAPACITY,
+            start = CoroutineStart.LAZY
         ) {
             consumeEach {
                 when (it) {

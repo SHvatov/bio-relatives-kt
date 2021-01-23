@@ -16,6 +16,7 @@ interface AssemblyCtx {
     /**
      * Set of paths to the BAM files used as reference data for the genome assembly
      * mapped by the unique id of the person whom they belong.
+     * TODO: Change UUID to some kind of role
      */
     val bamFilePaths: Map<UUID, Path>
 

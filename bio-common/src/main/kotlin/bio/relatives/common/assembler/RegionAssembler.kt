@@ -7,6 +7,6 @@ import htsjdk.samtools.SAMRecord
 /**
  * @author shvatov
  */
-interface RegionAssembler : AutoCloseable {
+interface RegionAssembler {
     fun assemble(feature: Feature, records: List<SAMRecord>): Region
 }

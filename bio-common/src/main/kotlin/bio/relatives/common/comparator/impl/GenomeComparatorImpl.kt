@@ -1,9 +1,10 @@
-package bio.relatives.common.assembler.impl
+package bio.relatives.common.comparator.impl
 
-import bio.relatives.common.assembler.AssemblyCtx
-import bio.relatives.common.assembler.GenomeAssembler
 import bio.relatives.common.assembler.RegionBatch
-import bio.relatives.common.processor.AssemblyProcessor
+import bio.relatives.common.comparator.CompareCtx
+import bio.relatives.common.comparator.GenomeComparator
+import bio.relatives.common.model.ComparisonResult
+import bio.relatives.common.processor.CompareProcessor
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,21 +25,26 @@ import java.util.concurrent.Executors
  */
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
-class GenomeAssemblerImpl(
+class GenomeComparatorImpl(
     /**
-     * Assembling context, which contains singletons and some additional data,
-     * required for the assembling. Will be used on lower levels of the assembling.
+     * Comparison context, which contains singletons and some additional data,
+     * required for the proper work of the comparison algorithms on lower levels.
      */
-    private val assembleCtx: AssemblyCtx
-) : GenomeAssembler {
+    compareCtx: CompareCtx,
+
+    /**
+     * Input channel, which will be used to fetch the data from the assembler.
+     */
+    private val inputChannel: ReceiveChannel<RegionBatch>
+) : GenomeComparator {
 
     /**
      * Parent scope for the execution of all the assembling coroutines.
      */
     private val scope = CoroutineScope(
         SupervisorJob() +
-            CoroutineName("Assembler") +
-            Executors.newFixedThreadPool(DEFAULT_ASSEMBLY_THREADS).asCoroutineDispatcher() +
+            CoroutineName("Comparator") +
+            Executors.newFixedThreadPool(DEFAULT_CMP_THREADS).asCoroutineDispatcher() +
             CoroutineExceptionHandler { ctx, exception ->
                 LOG.error(
                     "Exception occurred while processing data in ${ctx[CoroutineName]}:",
@@ -50,17 +57,13 @@ class GenomeAssemblerImpl(
      * Processor, which represents a separate coroutine, which will be used
      * for the assembling of the genome.
      */
-    private val processor = AssemblyProcessor(assembleCtx, scope)
+    private val processor = CompareProcessor(compareCtx, scope)
 
-    override fun assemble(): ReceiveChannel<RegionBatch> =
+    override fun compare(): ReceiveChannel<ComparisonResult> =
         processor.outputChannel.also {
             scope.launch {
-                val features = assembleCtx
-                    .featureParser
-                    .parseFeatures(assembleCtx.featureFilePath)
-
-                for (feature in features) {
-                    processor.inputChannel.send(feature)
+                inputChannel.consumeEach {
+                    processor.inputChannel.send(it)
                 }
             }
         }
@@ -74,8 +77,8 @@ class GenomeAssemblerImpl(
     }
 
     private companion object {
-        val LOG: Logger = LoggerFactory.getLogger(GenomeAssemblerImpl::class.java)
+        val LOG: Logger = LoggerFactory.getLogger(GenomeComparatorImpl::class.java)
 
-        const val DEFAULT_ASSEMBLY_THREADS = 5
+        const val DEFAULT_CMP_THREADS = 5
     }
 }

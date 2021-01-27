@@ -1,8 +1,9 @@
 package bio.relatives.common.assembler
 
 import bio.relatives.common.model.Region
+import bio.relatives.common.model.RoleAware
+import bio.relatives.common.model.RoleAware.Role
 import kotlinx.coroutines.channels.ReceiveChannel
-import java.util.UUID
 
 /**
  * @author shvatov
@@ -18,7 +19,7 @@ interface GenomeAssembler : AutoCloseable {
 }
 
 /**
- * @note: This is a basic alias for map, where key is a unique identifier of the
+ * @note: This is a basic alias for map, where key is a [RoleAware.Role] of the
  * person, whose genome is being parsed, while [Region] represents genome itself.
  */
-typealias RegionBatch = HashMap<UUID, Region>
+typealias RegionBatch = HashMap<Role, Region>

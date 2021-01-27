@@ -9,7 +9,8 @@ import java.io.Closeable
  */
 interface RegionParser : Closeable {
     /**
-     * Parses the [SAMRecord] instances, that contains the provided [feature].
+     * From the BAM file this parser is associated with parses the [SAMRecord] instances,
+     * that contains the provided [feature].
      */
     fun parseRegion(feature: Feature): List<SAMRecord>
 }

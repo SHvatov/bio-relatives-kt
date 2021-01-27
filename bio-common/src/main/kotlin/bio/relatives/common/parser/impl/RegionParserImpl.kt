@@ -25,6 +25,10 @@ class RegionParserImpl(
         }
     }
 
+    /**
+     * [SamReader] instance, local for each parser. Used to retrieve data
+     * from the BAM files.
+     */
     private val samReader = samReaderFactory
         .validationStringency(ValidationStringency.STRICT)
         .open(bamFilePath)

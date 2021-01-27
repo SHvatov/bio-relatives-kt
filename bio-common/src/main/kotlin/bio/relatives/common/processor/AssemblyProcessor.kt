@@ -18,8 +18,9 @@ import java.util.UUID
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 class AssemblyProcessor(
-    private val assemblyCtx: AssemblyCtx
-) : AbstractProcessor<Feature, RegionBatch>() {
+    private val assemblyCtx: AssemblyCtx,
+    parentScope: CoroutineScope
+) : AbstractProcessor<Feature, RegionBatch>(parentScope) {
     /**
      * Utils data class, which is used to store parser and assembler that
      * are associated with one of the people we are workng with.

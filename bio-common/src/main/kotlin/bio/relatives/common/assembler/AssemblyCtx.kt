@@ -1,8 +1,9 @@
 package bio.relatives.common.assembler
 
+import bio.relatives.common.model.RoleAware.Role
+import bio.relatives.common.parser.FeatureParser
 import bio.relatives.common.parser.RegionParserFactory
 import java.nio.file.Path
-import java.util.UUID
 
 /**
  * @author shvatov
@@ -18,7 +19,7 @@ interface AssemblyCtx {
      * mapped by the unique id of the person whom they belong.
      * TODO: Change UUID to some kind of role
      */
-    val bamFilePaths: Map<UUID, Path>
+    val bamFilePaths: Map<Role, Path>
 
     /**
      * Factory, which is used to create [RegionParser] instances.
@@ -29,4 +30,9 @@ interface AssemblyCtx {
      * Factory, which is used to create [RegionAssembler] instances.
      */
     val regionAssemblerFactory: RegionAssemblerFactory
+
+    /**
+     * [FeatureParser] impl, used to parse feature from corresponding file.
+     */
+    val featureParser: FeatureParser
 }

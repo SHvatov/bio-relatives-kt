@@ -5,12 +5,12 @@ import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.model.RoleAware
 import bio.relatives.common.parser.RegionParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
-import java.util.UUID
 
 /**
  * @author shvatov
@@ -18,29 +18,21 @@ import java.util.UUID
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 class AssemblyProcessor(
-    private val assemblyCtx: AssemblyCtx
-) : AbstractProcessor<Feature, RegionBatch>() {
-    /**
-     * Utils data class, which is used to store parser and assembler that
-     * are associated with one of the people we are workng with.
-     */
-    private data class AssemblyTool(
-        val parser: RegionParser,
-        val assembler: RegionAssembler
-    )
-
+    private val assemblyCtx: AssemblyCtx,
+    parentScope: CoroutineScope
+) : AbstractProcessor<Feature, RegionBatch>(parentScope) {
     override fun makeSubProcessor() = object : AbstractSubProcessor() {
         /**
-         * List of identifiers of the people, whose genomes we are working with.
+         * List of the roles of the people, whose genomes we are working with.
          */
-        private val identifiers = assemblyCtx.bamFilePaths.keys
+        private val roles = assemblyCtx.bamFilePaths.keys
 
         /**
          * Map of the tools grouped by the id of the person the are related to.
          */
         private val assemblyToolsById = with(assemblyCtx) {
             bamFilePaths.mapValues { (_, path) ->
-                AssemblyTool(
+                AssemblyTools(
                     parser = regionParserFactory.create(path),
                     assembler = regionAssemblerFactory.create()
                 )
@@ -48,7 +40,7 @@ class AssemblyProcessor(
         }
 
         override suspend fun process(parentScope: CoroutineScope, payload: Feature): RegionBatch {
-            val assemblyResults = identifiers.map {
+            val assemblyResults = roles.map {
                 parentScope.async {
                     assemble(it, payload)
                 }
@@ -56,8 +48,7 @@ class AssemblyProcessor(
 
             return assemblyResults
                 .map { it.await() }
-                .associateBy { it.identifier }
-                .toMap(RegionBatch())
+                .associateByTo(RegionBatch()) { it.role }
         }
 
         override fun close() {
@@ -66,13 +57,22 @@ class AssemblyProcessor(
         }
 
         /**
-         * Synchronously assembles one region of the genome of the person with [identifier]
+         * Synchronously assembles one region of the genome of the person with [role]
          * using the provided [feature].
          */
-        private fun assemble(identifier: UUID, feature: Feature): Region {
-            val (parser, assembler) = assemblyToolsById[identifier]!!
+        private fun assemble(role: RoleAware.Role, feature: Feature): Region {
+            val (parser, assembler) = assemblyToolsById.getValue(role)
             val records = parser.parseRegion(feature)
             return assembler.assemble(feature, records)
         }
     }
+
+    /**
+     * Utils data class, which is used to store parser and assembler that
+     * are associated with one of the people we are workng with.
+     */
+    private data class AssemblyTools(
+        val parser: RegionParser,
+        val assembler: RegionAssembler
+    )
 }

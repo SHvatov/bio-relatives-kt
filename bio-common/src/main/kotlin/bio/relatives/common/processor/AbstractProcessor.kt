@@ -5,10 +5,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -20,19 +19,23 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.UUID
-import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * TODO: tests!
+ * Note: Instead of separate input channel, [dispatcher] could have been used.
+ * The same goes with [poller] - could have used an inner method (even suspended one)
+ * in order to put the records into the queue. But we didn't want to expose inner interface.
  * @author shvatov
  */
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 abstract class AbstractProcessor<P : Any, R : Any>(
-    coroutineUniqueIdentifier: UUID = UUID.randomUUID(),
-    coroutineThreadPool: ThreadPoolExecutor? = null,
-    processingTimeout: Long = DEFAULT_PROCESS_TIMEOUT
+    /**
+     * Parent scope used for the structured multithreading and as as cource of the dispatchers.
+     * It can be created with the usage of the supervisor job in order to prevent
+     * the cancellation propagation.
+     */
+    parentScope: CoroutineScope
 ) : AutoCloseable {
     /**
      * Inner channel, which is used to transfer the output of the sub-coroutines
@@ -54,8 +57,8 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * associated coroutine and exception handler, which logs the exceptions by default.
      */
     private val scope = CoroutineScope(
-        CoroutineName("Processor-${coroutineUniqueIdentifier}") +
-            (coroutineThreadPool?.asCoroutineDispatcher() ?: Dispatchers.Default) +
+        parentScope.coroutineContext +
+            CoroutineName("Processor") +
             CoroutineExceptionHandler { ctx, exception ->
                 LOG.error(
                     "Exception occurred while processing data in ${ctx[CoroutineName.Key]}:",
@@ -71,7 +74,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
     private val poller = scope.launch {
         _inputChannel.consumeEach {
             dispatcher.send(
-                ProcessorAction.ProcessPayload(it, processingTimeout)
+                ProcessorAction.ProcessPayload(it, DEFAULT_PROCESS_TIMEOUT)
             )
         }
     }
@@ -109,6 +112,9 @@ abstract class AbstractProcessor<P : Any, R : Any>(
         // close the dispatcher and all sub-routines
         dispatcher.send(ProcessorAction.CloseSubProcessors)
         dispatcher.close()
+
+        // cancel the scope
+        scope.cancel()
     }
 
     /**

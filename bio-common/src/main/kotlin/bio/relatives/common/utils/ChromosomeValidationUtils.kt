@@ -42,7 +42,7 @@ fun validateNucleotideSequence(aware: NucleotideSequenceAware) {
     }
 }
 
-const val ALLOWED_NUCLEOTIDES = "agct"
+const val ALLOWED_NUCLEOTIDES = "agct*"
 
 const val UNKNOWN_NUCLEOTIDE = '*'
 

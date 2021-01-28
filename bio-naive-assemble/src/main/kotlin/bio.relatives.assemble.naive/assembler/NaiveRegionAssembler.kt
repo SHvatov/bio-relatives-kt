@@ -49,14 +49,14 @@ class NaiveRegionAssembler : RegionAssembler {
             }
             nucleotideSequence.append(bestNucleotide)
         }
-        TODO("change role to the natural role")
+        //TODO("change role to the natural role")
         return Region(RoleAware.Role.FATHER, nucleotideSequence.toString(), feature.chromosome, feature.gene, feature.start, feature.end)
     }
 
     private fun getNucleotideDistribution(records: List<SAMRecord>, position: Int): Map<Char, List<Byte>> {
 
         val dist: MutableMap<Char, MutableList<Byte>> = HashMap()
-        for (nucleotide in ALLOWED_NUCLEOTIDES.toCharArray()) {
+        for (nucleotide in ALLOWED_NUCLEOTIDES) {
             dist[nucleotide] = ArrayList()
         }
 

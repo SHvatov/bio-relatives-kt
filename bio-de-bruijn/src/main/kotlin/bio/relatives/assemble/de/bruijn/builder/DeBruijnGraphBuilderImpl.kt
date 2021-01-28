@@ -10,13 +10,13 @@ import htsjdk.samtools.SAMRecord
  */
 class DeBruijnGraphBuilderImpl : DeBruijnGraphBuilder {
     override fun buildGraph(records: List<SAMRecord>, kMerSize: Int): DeBruijnGraph {
-        var nodes: MutableSet<Node> = HashSet()
-        var startNodes: MutableList<Node> = ArrayList()
-        var graph: MutableMap<Node, MutableList<Edge>> = HashMap()
+        val nodes: MutableSet<Node> = HashSet()
+        val startNodes: MutableList<Node> = ArrayList()
+        val graph: MutableMap<Node, MutableList<Edge>> = HashMap()
 
         for (r in records) {
-            var currentSequence = r.readString
-            var currentQualities = r.baseQualities
+            val currentSequence = r.readString
+            val currentQualities = r.baseQualities
 
             for (i in 0 until currentSequence.length - kMerSize) {
                 val node1 = Node(currentSequence.substring(i, i + kMerSize),

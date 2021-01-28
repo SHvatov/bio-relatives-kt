@@ -7,6 +7,7 @@ import bio.relatives.assemble.de.bruijn.sorter.SAMRecordsSorterImpl
 import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.model.RoleAware
 import htsjdk.samtools.SAMRecord
 
 /**
@@ -28,6 +29,7 @@ class DeBruijnRegionAssembler : RegionAssembler {
                 ), feature
         )
 
-        return Region(, nucleotideSequence.nucleotides, feature.chromosome, feature.gene, feature.start, feature.end)
+        TODO("change role to the natural role")
+        return Region(RoleAware.Role.FATHER, nucleotideSequence.nucleotides, feature.chromosome, feature.gene, feature.start, feature.end)
     }
 }

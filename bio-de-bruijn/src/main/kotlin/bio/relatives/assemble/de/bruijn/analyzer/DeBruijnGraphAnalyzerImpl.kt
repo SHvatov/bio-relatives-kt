@@ -12,8 +12,8 @@ class DeBruijnGraphAnalyzerImpl : DeBruijnGraphAnalyzer {
     override fun analyze(deBruijnGraph: DeBruijnGraph): List<NucleotideSequence> {
         var nucleotideSequences: MutableList<NucleotideSequence> = ArrayList()
         for (startNode in deBruijnGraph.startNodes) {
-            var graph = deBruijnGraph.graph
-            var otherWays: MutableMap<Node, TMPNucleotideSequence> = HashMap()
+            val graph = deBruijnGraph.graph
+            val otherWays: MutableMap<Node, TMPNucleotideSequence> = HashMap()
             var currentNode: Node
 
             var currentNucleotides = StringBuilder()

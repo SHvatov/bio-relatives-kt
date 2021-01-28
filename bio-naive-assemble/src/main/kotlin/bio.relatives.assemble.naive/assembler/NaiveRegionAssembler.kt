@@ -3,6 +3,10 @@ package bio.relatives.assemble.naive.assembler
 import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.model.RoleAware
+import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
+import bio.relatives.common.utils.UNKNOWN_NUCLEOTIDE
+import bio.relatives.common.utils.getMedianQuality
 import htsjdk.samtools.SAMRecord
 import java.util.*
 
@@ -10,12 +14,6 @@ import java.util.*
  * @author Created by Vladislav Marchenko on 21.01.2021
  */
 class NaiveRegionAssembler : RegionAssembler {
-
-    private val NUCLEOTIDES = "agct"
-
-
-    private val UNKNOWN_NUCLEOTIDE = '*'
-
 
     override fun assemble(feature: Feature, records: List<SAMRecord>): Region {
 
@@ -51,13 +49,14 @@ class NaiveRegionAssembler : RegionAssembler {
             }
             nucleotideSequence.append(bestNucleotide)
         }
-        return Region(nucleotideSequence.toString(), feature.chromosome, feature.gene, feature.start, feature.end)
+        TODO("change role to the natural role")
+        return Region(RoleAware.Role.FATHER, nucleotideSequence.toString(), feature.chromosome, feature.gene, feature.start, feature.end)
     }
 
-    private fun getNucleotideDistribution(records: List<SAMRecord>, position: Long): Map<Char, List<Byte>> {
+    private fun getNucleotideDistribution(records: List<SAMRecord>, position: Int): Map<Char, List<Byte>> {
 
         val dist: MutableMap<Char, MutableList<Byte>> = HashMap()
-        for (nucleotide in NUCLEOTIDES.toCharArray()) {
+        for (nucleotide in ALLOWED_NUCLEOTIDES.toCharArray()) {
             dist[nucleotide] = ArrayList()
         }
 
@@ -66,30 +65,13 @@ class NaiveRegionAssembler : RegionAssembler {
             var currentNucleotide = ' '
             var currentQuality: Byte = 0
             if (pos < rec.readLength && pos >= 0) {
-                currentNucleotide = Character.toLowerCase(rec.readString[pos.toInt()])
-                currentQuality = rec.baseQualities[pos.toInt()]
+                currentNucleotide = Character.toLowerCase(rec.readString[pos])
+                currentQuality = rec.baseQualities[pos]
             }
-            if (NUCLEOTIDES.contains(currentNucleotide.toString())) {
+            if (ALLOWED_NUCLEOTIDES.contains(currentNucleotide.toString())) {
                 dist[currentNucleotide]!!.add(currentQuality)
             }
         }
         return dist
-    }
-
-    private fun getMedianQuality(qualities: List<Byte>): Byte {
-
-        qualities.sorted()
-
-        return when {
-            qualities.size % 2 != 0 -> {
-                qualities[qualities.size / 2]
-            }
-            qualities.isNotEmpty() -> {
-                ((qualities[qualities.size / 2] + qualities[qualities.size / 2 - 1]) / 2).toByte()
-            }
-            else -> {
-                0
-            }
-        }
     }
 }

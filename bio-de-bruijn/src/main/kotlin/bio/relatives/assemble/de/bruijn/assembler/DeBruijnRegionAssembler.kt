@@ -1,5 +1,9 @@
 package bio.relatives.assemble.de.bruijn.assembler
 
+import bio.relatives.assemble.de.bruijn.analyzer.DeBruijnGraphAnalyzerImpl
+import bio.relatives.assemble.de.bruijn.builder.DeBruijnGraphBuilderImpl
+import bio.relatives.assemble.de.bruijn.selector.NucleotideSequenceSelectorImpl
+import bio.relatives.assemble.de.bruijn.sorter.SAMRecordsSorterImpl
 import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
@@ -10,6 +14,20 @@ import htsjdk.samtools.SAMRecord
  */
 class DeBruijnRegionAssembler : RegionAssembler {
     override fun assemble(feature: Feature, records: List<SAMRecord>): Region {
-        TODO()
+        val kMerSize = 3
+        val recordsSorter = SAMRecordsSorterImpl()
+        val graphBuilder = DeBruijnGraphBuilderImpl()
+        val graphAnalyzer = DeBruijnGraphAnalyzerImpl()
+        val sequenceSelector = NucleotideSequenceSelectorImpl()
+
+        val nucleotideSequence = sequenceSelector.select(
+                graphAnalyzer.analyze(
+                        graphBuilder.buildGraph(
+                                recordsSorter.sort(records), kMerSize
+                        )
+                ), feature
+        )
+
+        return Region(, nucleotideSequence.nucleotides, feature.chromosome, feature.gene, feature.start, feature.end)
     }
 }

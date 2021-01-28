@@ -3,6 +3,8 @@ package bio.relatives.assemble.de.bruijn.builder
 import bio.relatives.assemble.de.bruijn.model.graph.DeBruijnGraph
 import bio.relatives.assemble.de.bruijn.model.graph.Edge
 import bio.relatives.assemble.de.bruijn.model.graph.Node
+import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
+import bio.relatives.common.utils.UNKNOWN_NUCLEOTIDE
 import htsjdk.samtools.SAMRecord
 
 /**
@@ -19,11 +21,11 @@ class DeBruijnGraphBuilderImpl : DeBruijnGraphBuilder {
             val currentQualities = r.baseQualities
 
             for (i in 0 until currentSequence.length - kMerSize) {
-                val node1 = Node(currentSequence.substring(i, i + kMerSize),
-                        currentQualities.slice(i until i + kMerSize))
-                val node2 = Node(currentSequence.substring(i + 1, i + kMerSize + 1),
-                        currentQualities.slice(i until i + kMerSize + 1))
-                val edge = Edge(node1, node2, currentSequence.substring(i..i + kMerSize), false)
+                val node1 = buildNode(i, i + kMerSize, currentSequence, currentQualities.toList())
+
+                val node2 = buildNode(i + 1, i + kMerSize + 1, currentSequence, currentQualities.toList())
+
+                val edge = Edge(node1, node2, node1.kMer + node2.kMer[kMerSize - 1], false)
 
                 if (!nodes.contains(node1)) {
                     startNodes.add(node1)
@@ -40,5 +42,25 @@ class DeBruijnGraphBuilderImpl : DeBruijnGraphBuilder {
             }
         }
         return DeBruijnGraph(graph, startNodes, kMerSize)
+    }
+
+    private fun buildNode(start: Int, end: Int, currentSequence: String, currentQualities: List<Byte>): Node {
+        val sequence = currentSequence.substring(start, end).toLowerCase()
+        val qualities = currentQualities.slice(start until end).toMutableList()
+        return if (!sequence.all { ALLOWED_NUCLEOTIDES.contains(it) }) {
+            val ourSequence = StringBuilder(sequence)
+            sequence.forEachIndexed { index, char ->
+                run {
+                    if (!ALLOWED_NUCLEOTIDES.contains(char)) {
+                        ourSequence.replaceRange(index, index, UNKNOWN_NUCLEOTIDE.toString())
+                        qualities[index] = 0
+                    }
+                }
+            }
+            Node(ourSequence.toString(), qualities)
+        } else {
+            Node(sequence, qualities)
+        }
+
     }
 }

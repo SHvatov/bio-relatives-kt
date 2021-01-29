@@ -37,7 +37,7 @@ fun validateNucleotideSequence(aware: NucleotideSequenceAware) {
     with(aware) {
         require(sequence.all { it in ALLOWED_NUCLEOTIDES + UNKNOWN_NUCLEOTIDE }) {
             "\"sequence\" must be formed from valid nucleotides - " +
-                    ALLOWED_NUCLEOTIDES.toCharArray().joinToString()
+                    (ALLOWED_NUCLEOTIDES + UNKNOWN_NUCLEOTIDE).toCharArray().joinToString()
         }
     }
 }

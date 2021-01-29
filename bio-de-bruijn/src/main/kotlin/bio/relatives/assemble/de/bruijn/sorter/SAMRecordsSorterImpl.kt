@@ -10,11 +10,11 @@ class SAMRecordsSorterImpl : SAMRecordsSorter {
             .toMutableList()
             .sortedWith { s1, s2 ->
                 when {
-                    (s1.alignmentStart > s2.alignmentStart) || (
-                            s1.alignmentStart.compareTo(s2.alignmentStart) == 0 && s1.alignmentEnd > s2.alignmentEnd
+                    (s1.start > s2.start) || (
+                            s1.start.compareTo(s2.start) == 0 && s1.end > s2.end
                             ) -> 1
-                    (s1.alignmentStart.compareTo(s2.alignmentStart) == 0
-                            && s1.alignmentEnd.compareTo(s2.alignmentEnd) == 0) -> 0
+                    (s1.start.compareTo(s2.start) == 0
+                            && s1.end.compareTo(s2.end) == 0) -> 0
                     else -> -1
                 }
             }

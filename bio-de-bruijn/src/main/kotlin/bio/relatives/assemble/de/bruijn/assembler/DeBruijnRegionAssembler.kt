@@ -29,7 +29,7 @@ class DeBruijnRegionAssembler : RegionAssembler {
                 ), feature
         )
 
-        TODO("change role to the natural role")
+        //TODO("change role to the natural role")
         return Region(RoleAware.Role.FATHER, nucleotideSequence.nucleotides, feature.chromosome, feature.gene, feature.start, feature.end)
     }
 }

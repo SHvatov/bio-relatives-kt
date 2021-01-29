@@ -63,7 +63,7 @@ class AssemblyProcessor(
         private fun assemble(role: RoleAware.Role, feature: Feature): Region {
             val (parser, assembler) = assemblyToolsById.getValue(role)
             val records = parser.parseRegion(feature)
-            return assembler.assemble(feature, records)
+            return assembler.assemble(role, feature, records)
         }
     }
 

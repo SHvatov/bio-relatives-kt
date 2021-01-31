@@ -2,9 +2,9 @@ package bio.relatives.common.processor
 
 import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.comparator.CompareCtx
+import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult
-import bio.relatives.common.model.ComparisonResult.AlgorithmResult
-import bio.relatives.common.model.ComparisonResult.Between
+import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,8 +25,9 @@ class CompareProcessor(
             parentScope: CoroutineScope,
             payload: RegionBatch
         ): ComparisonResult {
-            val results = mutableMapOf<Between, Deferred<AlgorithmResult>>()
-            for (between in Between.COMPARISON_PAIRS) {
+            val results =
+                mutableMapOf<ComparisonParticipants, Deferred<ComparisonAlgorithmResult>>()
+            for (between in ComparisonParticipants.COMPARISON_PAIRS) {
                 val (first, second) = payload[between.firstRole] to payload[between.secondRole]
                 if (first != null && second != null) {
                     results[between] = parentScope.async {

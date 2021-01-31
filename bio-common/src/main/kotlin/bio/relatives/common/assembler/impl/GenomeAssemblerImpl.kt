@@ -76,6 +76,6 @@ class GenomeAssemblerImpl(
     private companion object {
         val LOG: Logger = LoggerFactory.getLogger(GenomeAssemblerImpl::class.java)
 
-        const val DEFAULT_ASSEMBLY_THREADS = 5
+        const val DEFAULT_ASSEMBLY_THREADS = 3
     }
 }

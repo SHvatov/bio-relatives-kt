@@ -9,5 +9,9 @@ import htsjdk.samtools.SAMRecord
  * @author shvatov
  */
 interface RegionAssembler {
+    /**
+     * Assembles a region of the person with assumed [role],
+     * defined by the provided [feature] and list of [records].
+     */
     fun assemble(role: Role, feature: Feature, records: List<SAMRecord>): Region
 }

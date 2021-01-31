@@ -39,13 +39,13 @@ class ComparisonResult : MutableMap<Between, AlgorithmResult> by HashMap() {
      */
     interface AlgorithmResult {
         /**
-         * Result, produced by the algorithm. For example, the similarity percent.
+         * Percentage of the similarity between two genomes according to the algorithm.
          */
-        val result: Any
+        val similarityPercentage: Double
 
         /**
-         * Some additional info, which can be used by the results analyzer.
+         * Error rate of the algorithm based on the assembly error rate.
          */
-        val additionalInfo: Map<String, Any>
+        val errorRate: Double
     }
 }

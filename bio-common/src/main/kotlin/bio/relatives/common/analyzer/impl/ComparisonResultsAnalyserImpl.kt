@@ -4,10 +4,13 @@ import bio.relatives.common.analyzer.ComparisonResultsAnalyser
 import bio.relatives.common.analyzer.impl.ComparisonResultsAnalyserImpl.AnalyserCommand.PerformAnalysis
 import bio.relatives.common.analyzer.impl.ComparisonResultsAnalyserImpl.AnalyserCommand.StoreResult
 import bio.relatives.common.model.AnalysisResult
+import bio.relatives.common.model.AnalysisResult.ChromosomeResult
 import bio.relatives.common.model.AnalysisResult.GenomeResult
 import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
+import bio.relatives.common.utils.calculateAdditionRelativeErrorRate
+import bio.relatives.common.utils.calculateAverageQuality
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
@@ -103,8 +106,39 @@ class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
                 }
             }
 
-            TODO("calculate average error and similarity using square distribution")
-            // return GenomeResult()
+            val chromosomeAnalysisResults = mutableListOf<ChromosomeResult>()
+            for ((key, result) in resultsByChromosomeAndGene) {
+                val chromosomeAverageSimilarity =
+                    calculateAverageQuality(result.map { it.similarityPercentage })
+                val chromosomeRelativeErrorRate =
+                    calculateAdditionRelativeErrorRate(
+                        result.associate { it.similarityPercentage to it.errorRate }
+                    ) / 2
+                val chromosomeAbsoluteErrorRate =
+                    chromosomeRelativeErrorRate * chromosomeAverageSimilarity
+
+                chromosomeAnalysisResults.add(
+                    ChromosomeResult(
+                        key.first,
+                        key.second,
+                        chromosomeAverageSimilarity,
+                        chromosomeAbsoluteErrorRate
+                    )
+                )
+            }
+
+            val genomeAverageSimilarity =
+                calculateAverageQuality(chromosomeAnalysisResults.map { it.averageSimilarity })
+            val genomeRelativeErrorRate =
+                calculateAdditionRelativeErrorRate(
+                    chromosomeAnalysisResults.associate { it.averageSimilarity to it.averageErrorRate }
+                ) / 2
+            val genomeAbsoluteErrorRate = genomeRelativeErrorRate * genomeAverageSimilarity
+            return GenomeResult(
+                genomeAverageSimilarity,
+                genomeAbsoluteErrorRate,
+                chromosomeAnalysisResults
+            )
         }
 
         val deferredAnalysisResults = mutableMapOf<ComparisonParticipants, Deferred<GenomeResult>>()

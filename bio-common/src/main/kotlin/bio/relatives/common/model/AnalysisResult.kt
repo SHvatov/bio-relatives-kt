@@ -22,8 +22,8 @@ class AnalysisResult : MutableMap<ComparisonParticipants, GenomeResult> by HashM
      * and [averageErrorRate] of the chromosomes.
      */
     data class ChromosomeResult(
-        override val chromosome: String,
         override val gene: String,
+        override val chromosome: String,
         val averageSimilarity: Double,
         val averageErrorRate: Double,
     ) : ChromosomeAware

@@ -14,5 +14,5 @@ interface NucleotideSequenceAware {
      * nucleotide read by the sequenator. Potentially could be used
      * for calculating the error rate.
      */
-    val qualities: Array<Byte>
+    val qualities: Array<Double>
 }

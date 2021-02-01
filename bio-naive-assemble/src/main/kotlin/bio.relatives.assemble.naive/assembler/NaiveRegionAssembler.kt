@@ -6,7 +6,7 @@ import bio.relatives.common.model.Region
 import bio.relatives.common.model.RoleAware.Role
 import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
 import bio.relatives.common.utils.UNKNOWN_NUCLEOTIDE
-import bio.relatives.common.utils.getMedianQuality
+import bio.relatives.common.utils.calculateMedianVale
 import htsjdk.samtools.SAMRecord
 import java.util.ArrayList
 import java.util.HashMap
@@ -18,7 +18,7 @@ class NaiveRegionAssembler : RegionAssembler {
     /**
      * Atomic [nucleotide] chosen based on its [quality].
      */
-    private data class Nucleotide(val nucleotide: Char, val quality: Byte)
+    private data class Nucleotide(val nucleotide: Char, val quality: Double)
 
     override fun assemble(role: Role, feature: Feature, records: List<SAMRecord>): Region {
         val nucleotideSequence = mutableListOf<Nucleotide>()
@@ -27,21 +27,21 @@ class NaiveRegionAssembler : RegionAssembler {
             val currentNucleotides = getNucleotideDistribution(records, position)
 
             var bestNucleotide = UNKNOWN_NUCLEOTIDE
-            var bestQuality: Byte = 0
+            var bestQuality = 0.0
             var bestCount = 0
 
             for ((key, value) in currentNucleotides) {
                 if (value.size > bestCount) {
                     bestCount = value.size
                     bestNucleotide = key
-                    bestQuality = getMedianQuality(value)
+                    bestQuality = calculateMedianVale(value)
                 }
 
                 if (value.size == bestCount) {
-                    if (getMedianQuality(value) > bestQuality) {
+                    if (calculateMedianVale(value) > bestQuality) {
                         bestCount = value.size
                         bestNucleotide = key
-                        bestQuality = getMedianQuality(value)
+                        bestQuality = calculateMedianVale(value)
                     }
                 }
             }
@@ -53,8 +53,8 @@ class NaiveRegionAssembler : RegionAssembler {
             role,
             nucleotideSequence.map { it.nucleotide }.joinToString(separator = ""),
             nucleotideSequence.map { it.quality }.toTypedArray(),
-            feature.chromosome,
             feature.gene,
+            feature.chromosome,
             feature.start,
             feature.end
         )

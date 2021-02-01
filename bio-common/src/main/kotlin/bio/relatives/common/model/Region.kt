@@ -11,9 +11,9 @@ import bio.relatives.common.utils.validateNucleotideSequence
 data class Region(
     override val role: Role,
     override val sequence: String,
-    override val qualities: Array<Byte>,
-    override val chromosome: String,
+    override val qualities: Array<Double>,
     override val gene: String,
+    override val chromosome: String,
     override val start: Int,
     override val end: Int
 ) : NucleotideSequenceAware, ChromosomeAware, ChromosomePositionAware, RoleAware {

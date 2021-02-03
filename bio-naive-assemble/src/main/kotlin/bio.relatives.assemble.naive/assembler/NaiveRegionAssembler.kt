@@ -6,62 +6,64 @@ import bio.relatives.common.model.Region
 import bio.relatives.common.model.RoleAware.Role
 import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
 import bio.relatives.common.utils.UNKNOWN_NUCLEOTIDE
-import bio.relatives.common.utils.getMedianQuality
+import bio.relatives.common.utils.calculateMedianVale
 import htsjdk.samtools.SAMRecord
-import java.util.*
+import java.util.ArrayList
+import java.util.HashMap
 
 /**
  * @author Created by Vladislav Marchenko on 21.01.2021
  */
 class NaiveRegionAssembler : RegionAssembler {
+    /**
+     * Atomic [nucleotide] chosen based on its [quality].
+     */
+    private data class Nucleotide(val nucleotide: Char, val quality: Double)
 
     override fun assemble(role: Role, feature: Feature, records: List<SAMRecord>): Region {
+        val nucleotideSequence = mutableListOf<Nucleotide>()
 
-        val nucleotideSequence = StringBuilder()
+        for (position in feature.start..feature.end) {
+            val currentNucleotides = getNucleotideDistribution(records, position)
 
-        for (i in feature.start..feature.end) {
-
-            val currentNucleotides: Map<Char, List<Byte>> = getNucleotideDistribution(records, i)
-
-            var bestNucleotide: Char = UNKNOWN_NUCLEOTIDE
-
-            var bestQuality: Byte = 0
-
+            var bestNucleotide = UNKNOWN_NUCLEOTIDE
+            var bestQuality = 0.0
             var bestCount = 0
 
-            val set = currentNucleotides.entries
-            for ((key, value) in set) {
-
+            for ((key, value) in currentNucleotides) {
                 if (value.size > bestCount) {
                     bestCount = value.size
                     bestNucleotide = key
-                    bestQuality = getMedianQuality(value)
+                    bestQuality = calculateMedianVale(value)
                 }
 
                 if (value.size == bestCount) {
-
-                    if (getMedianQuality(value) > bestQuality) {
+                    if (calculateMedianVale(value) > bestQuality) {
                         bestCount = value.size
                         bestNucleotide = key
-                        bestQuality = getMedianQuality(value)
+                        bestQuality = calculateMedianVale(value)
                     }
                 }
             }
-            nucleotideSequence.append(bestNucleotide)
+
+            nucleotideSequence.add(Nucleotide(bestNucleotide, bestQuality))
         }
+
         return Region(
-                role,
-                nucleotideSequence.toString(),
-                feature.chromosome,
-                feature.gene,
-                feature.start,
-                feature.end,
-                feature.repeatMotif
+            role,
+            nucleotideSequence.map { it.nucleotide }.joinToString(separator = ""),
+            nucleotideSequence.map { it.quality }.toTypedArray(),
+            feature.gene,
+            feature.chromosome,
+            feature.start,
+            feature.end
         )
     }
 
-    private fun getNucleotideDistribution(records: List<SAMRecord>, position: Int): Map<Char, List<Byte>> {
-
+    private fun getNucleotideDistribution(
+        records: List<SAMRecord>,
+        position: Int
+    ): Map<Char, List<Byte>> {
         val dist: MutableMap<Char, MutableList<Byte>> = HashMap()
         for (nucleotide in ALLOWED_NUCLEOTIDES) {
             dist[nucleotide] = ArrayList()
@@ -71,10 +73,12 @@ class NaiveRegionAssembler : RegionAssembler {
             val pos = position - rec.start
             var currentNucleotide = ' '
             var currentQuality: Byte = 0
+
             if (pos < rec.readLength && pos >= 0) {
                 currentNucleotide = Character.toLowerCase(rec.readString[pos])
                 currentQuality = rec.baseQualities[pos]
             }
+
             if (ALLOWED_NUCLEOTIDES.contains(currentNucleotide.toString())) {
                 dist[currentNucleotide]!!.add(currentQuality)
             }

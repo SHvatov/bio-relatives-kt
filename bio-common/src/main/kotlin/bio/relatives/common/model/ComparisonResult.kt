@@ -1,44 +1,30 @@
 package bio.relatives.common.model
 
-import bio.relatives.common.model.ComparisonResult.AlgorithmResult
-import bio.relatives.common.model.ComparisonResult.Between
-import bio.relatives.common.model.RoleAware.Role
-import bio.relatives.common.model.RoleAware.Role.*
+import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 
 /**
  * Represents the result of the comparison of two or more genomes between each other.
  * @author shvatov
  */
-class ComparisonResult : MutableMap<Between, AlgorithmResult> by HashMap() {
+class ComparisonResult :
+    MutableMap<ComparisonParticipants, ComparisonAlgorithmResult> by HashMap() {
     /**
-     * Defines the roles, between which the comparison has happened.
+     * @author shvatov
      */
-    abstract class Between(
-        val firstRole: Role,
-        val secondRole: Role
-    ) {
+    data class ComparisonAlgorithmResult(
         /**
-         * Comparison between mother and son.
+         * Feature, which has been assembled and compared between two persons.
          */
-        object MotherAndSon : Between(MOTHER, SON)
+        val feature: Feature,
 
         /**
-         * Comparison between father and son.
+         * Percentage of the similarity between two genomes according to the algorithm.
          */
-        object FatherAndSon : Between(FATHER, SON)
+        val similarityPercentage: Double,
 
-        companion object {
-            val COMPARISON_PAIRS = listOf(MotherAndSon, FatherAndSon)
-        }
-    }
-
-    /**
-     * Interface of the result of the comparison, produced by one of the algorithms.
-     */
-    interface AlgorithmResult {
         /**
-         * Result, produced by the algorithm. For example, the similarity percent.
+         * Error rate of the algorithm based on the assembly error rate.
          */
-        val result: Any
-    }
+        val errorRate: Double
+    )
 }

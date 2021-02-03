@@ -1,7 +1,6 @@
 package bio.relatives.common.comparator
 
-import bio.relatives.common.model.ComparisonResult
-import bio.relatives.common.model.ComparisonResult.AlgorithmResult
+import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import bio.relatives.common.model.Region
 
 /**
@@ -10,8 +9,7 @@ import bio.relatives.common.model.Region
  */
 interface GenomeComparatorAlgorithm {
     /**
-     * Compares provided [Region]  instances and returns some kind of the result,
-     * which implements [ComparisonResult.AlgorithmResult] interface.
+     * Compares provided [Region] instances and returns the result as [ComparisonAlgorithmResult].
      */
-    fun compare(left: Region, right: Region): AlgorithmResult
+    fun compare(left: Region, right: Region): ComparisonAlgorithmResult
 }

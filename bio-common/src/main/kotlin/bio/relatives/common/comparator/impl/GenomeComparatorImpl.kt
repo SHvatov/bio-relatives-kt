@@ -79,6 +79,6 @@ class GenomeComparatorImpl(
     private companion object {
         val LOG: Logger = LoggerFactory.getLogger(GenomeComparatorImpl::class.java)
 
-        const val DEFAULT_CMP_THREADS = 5
+        const val DEFAULT_CMP_THREADS = 3
     }
 }

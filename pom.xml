@@ -19,7 +19,7 @@
         <module>bio-common</module>
         <module>bio-distance</module>
         <module>bio-test-app</module>
-        <module>bio-de-brujin</module>
+        <module>bio-de-bruijn</module>
         <module>bio-naive-assemble</module>
         <module>bio-str</module>
     </modules>

@@ -49,7 +49,15 @@ class NaiveRegionAssembler : RegionAssembler {
             }
             nucleotideSequence.append(bestNucleotide)
         }
-        return Region(role, nucleotideSequence.toString(), feature.chromosome, feature.gene, feature.start, feature.end)
+        return Region(
+                role,
+                nucleotideSequence.toString(),
+                feature.chromosome,
+                feature.gene,
+                feature.start,
+                feature.end,
+                feature.repeatMotif
+        )
     }
 
     private fun getNucleotideDistribution(records: List<SAMRecord>, position: Int): Map<Char, List<Byte>> {

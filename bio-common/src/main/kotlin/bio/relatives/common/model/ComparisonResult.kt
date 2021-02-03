@@ -3,9 +3,7 @@ package bio.relatives.common.model
 import bio.relatives.common.model.ComparisonResult.AlgorithmResult
 import bio.relatives.common.model.ComparisonResult.Between
 import bio.relatives.common.model.RoleAware.Role
-import bio.relatives.common.model.RoleAware.Role.FATHER
-import bio.relatives.common.model.RoleAware.Role.MOTHER
-import bio.relatives.common.model.RoleAware.Role.SON
+import bio.relatives.common.model.RoleAware.Role.*
 
 /**
  * Represents the result of the comparison of two or more genomes between each other.
@@ -42,10 +40,5 @@ class ComparisonResult : MutableMap<Between, AlgorithmResult> by HashMap() {
          * Result, produced by the algorithm. For example, the similarity percent.
          */
         val result: Any
-
-        /**
-         * Some additional info, which can be used by the results analyzer.
-         */
-        val additionalInfo: Map<String, Any>
     }
 }

@@ -9,6 +9,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import java.util.regex.Pattern
 
 
 /**
@@ -38,6 +39,8 @@ internal class NaiveRegionAssemblerTest {
         private const val TEST_CHR = "chr1"
 
         private const val TEST_GENE = "gene1"
+
+        private val TEST_REPEAT_MOTIF: Pattern = Pattern.compile("agct")
 
         private const val TEST_READ_LENGTH_1 = 8
 
@@ -76,6 +79,7 @@ internal class NaiveRegionAssemblerTest {
         Mockito.`when`(TEST_FEATURE.end).thenReturn(TEST_GENOME_END)
         Mockito.`when`(TEST_FEATURE.gene).thenReturn(TEST_GENE)
         Mockito.`when`(TEST_FEATURE.chromosome).thenReturn(TEST_CHR)
+        Mockito.`when`(TEST_FEATURE.repeatMotif).thenReturn(TEST_REPEAT_MOTIF)
 
         Mockito.`when`(TEST_SAMRECORDS[0].readLength).thenReturn(TEST_READ_LENGTH_1)
         Mockito.`when`(TEST_SAMRECORDS[1].readLength).thenReturn(TEST_READ_LENGTH_2)

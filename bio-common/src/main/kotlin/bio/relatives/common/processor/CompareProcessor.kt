@@ -5,11 +5,8 @@ import bio.relatives.common.comparator.CompareCtx
 import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.async
+import bio.relatives.common.model.RegionBatch
+import kotlinx.coroutines.*
 
 /**
  * @author shvatov
@@ -22,16 +19,16 @@ class CompareProcessor(
 ) : AbstractProcessor<RegionBatch, ComparisonResult>(parentScope) {
     override fun makeSubProcessor() = object : AbstractSubProcessor() {
         override suspend fun process(
-            parentScope: CoroutineScope,
-            payload: RegionBatch
+                parentScope: CoroutineScope,
+                batch: RegionBatch
         ): ComparisonResult {
             val results =
                 mutableMapOf<ComparisonParticipants, Deferred<ComparisonAlgorithmResult>>()
             for (between in ComparisonParticipants.COMPARISON_PAIRS) {
-                val (first, second) = payload[between.firstRole] to payload[between.secondRole]
+                val (first, second) = batch.payload[between.firstRole] to batch.payload[between.secondRole]
                 if (first != null && second != null) {
                     results[between] = parentScope.async {
-                        compareCtx.algorithm.compare(first, second)
+                        compareCtx.algorithm.compare(first, second, batch.feature)
                     }
                 }
             }

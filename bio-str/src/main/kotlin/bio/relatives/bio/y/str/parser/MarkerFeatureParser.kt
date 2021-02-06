@@ -1,50 +1,57 @@
-package bio.relatives.bio.distance.parser
+package bio.relatives.bio.y.str.parser
 
-import bio.relatives.bio.distance.model.BEDFeature
+import bio.relatives.bio.y.str.model.MarkerFeature
 import bio.relatives.common.model.Feature
 import bio.relatives.common.parser.FeatureParser
-import bio.relatives.common.parser.FeatureParser.Companion.MAX_FEATURE_SIZE
+import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
 import org.springframework.stereotype.Component
 import java.nio.file.Path
+import java.util.regex.Pattern
 
 /**
  * @author Created by Vladislav Marchenko on 02.02.2021
  */
 @Component
-class BEDFeatureParser : FeatureParser {
+class MarkerFeatureParser : FeatureParser {
     override fun parseFeatures(featureFilePath: Path): List<Feature> {
         isValidFile(featureFilePath)
 
-        val res = mutableListOf<BEDFeature>()
+        val res = mutableListOf<MarkerFeature>()
 
         featureFilePath.toFile().forEachLine {
             run {
                 if (it != "/n" && !it.startsWith("#")) {
                     val rows: Array<String> = it.split("[\\s+\\t+]".toRegex()).filter { it.isNotBlank() }.toTypedArray()
 
-                    require(rows.size == 4) {
+                    require(rows.size == 5) {
                         "Error occurred during reading from the file [$featureFilePath]: " +
-                                "incorrect number of rows in the table. Expected 4 (chrom, start, end, gene name), got ${rows.size}"
+                                "incorrect number of rows in the table. Expected 5 (chrom, start, end, gene name, repeatMotif), got ${rows.size}"
+                    }
+
+                    require(rows[4].all { ALLOWED_NUCLEOTIDES.contains(it) }) {
+                        "Error occurred during reading from the file [$featureFilePath]: " +
+                                "incorrect repeatMotif ${rows[4]}"
                     }
 
                     val chrom = rows[0]
                     val gene = rows[3]
                     val start = rows[1].toInt()
                     val end = rows[2].toInt()
+                    val repeatMotif = Pattern.compile(rows[4])
 
                     val exonLen = end - start
-                    if (exonLen <= MAX_FEATURE_SIZE) {
-                        res.add(BEDFeature(chrom, gene, start, end))
+                    if (exonLen <= FeatureParser.MAX_FEATURE_SIZE) {
+                        res.add(MarkerFeature(chrom, gene, start, end, repeatMotif))
                     } else {
                         var tempStart = start
                         for (tempEnd in start..end) {
-                            if (tempEnd - tempStart > MAX_FEATURE_SIZE) {
-                                res.add(BEDFeature(chrom, gene, tempStart, tempEnd))
+                            if (tempEnd - tempStart > FeatureParser.MAX_FEATURE_SIZE) {
+                                res.add(MarkerFeature(chrom, gene, tempStart, tempEnd, repeatMotif))
                                 tempStart = tempEnd + 1
                             }
                         }
                         if (end - tempStart > 1) {
-                            res.add(BEDFeature(chrom, gene, tempStart, end))
+                            res.add(MarkerFeature(chrom, gene, tempStart, end, repeatMotif))
                         }
                     }
                 }

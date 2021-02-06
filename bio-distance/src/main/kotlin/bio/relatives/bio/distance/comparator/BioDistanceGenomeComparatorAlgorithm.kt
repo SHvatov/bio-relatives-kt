@@ -1,10 +1,11 @@
 package bio.relatives.bio.distance.comparator
 
-import bio.relatives.bio.distance.model.BioDistanceAlgorithmResult
 import bio.relatives.common.comparator.GenomeComparatorAlgorithm
 import bio.relatives.common.model.ComparisonResult
+import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
 import bio.relatives.common.utils.getNormalizedAlignments
+import bio.relatives.common.utils.round
 import java.lang.Integer.max
 import java.lang.Integer.min
 
@@ -13,7 +14,7 @@ import java.lang.Integer.min
  */
 class BioDistanceGenomeComparatorAlgorithm : GenomeComparatorAlgorithm {
 
-    override fun compare(left: Region, right: Region): ComparisonResult.AlgorithmResult {
+    override fun compare(left: Region, right: Region, feature: Feature): ComparisonResult.ComparisonAlgorithmResult {
 
         val temp: Pair<String, String> = getNormalizedAlignments(left.sequence, right.sequence)
 
@@ -38,8 +39,10 @@ class BioDistanceGenomeComparatorAlgorithm : GenomeComparatorAlgorithm {
 
         val difference = current[s.length]
         val length = max(f.length, s.length)
+        val similarityPercent = round(100.0 - difference.toDouble() / length.toDouble() * 100.0, 2)
+        val errorRate = round(100 - arrayOf(*left.qualities, *right.qualities).average(), 2)
 
-        return BioDistanceAlgorithmResult(Pair(difference, length))
+        return ComparisonResult.ComparisonAlgorithmResult(feature, similarityPercent, errorRate)
     }
 
 }

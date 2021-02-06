@@ -1,7 +1,9 @@
-package bio.relatives.common.comparator
+package bio.relatives.common.comparator.impl
 
-import bio.relatives.common.assembler.RegionBatch
-import bio.relatives.common.comparator.impl.GenomeComparatorImpl
+import bio.relatives.common.comparator.CompareCtxFactory
+import bio.relatives.common.comparator.GenomeComparator
+import bio.relatives.common.comparator.GenomeComparatorFactory
+import bio.relatives.common.model.RegionBatch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel

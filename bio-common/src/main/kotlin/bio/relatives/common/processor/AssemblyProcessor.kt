@@ -39,16 +39,16 @@ class AssemblyProcessor(
             }
         }
 
-        override suspend fun process(parentScope: CoroutineScope, payload: Feature): RegionBatch {
+        override suspend fun process(parentScope: CoroutineScope, batch: Feature): RegionBatch {
             val assemblyResults = roles.map {
                 parentScope.async {
-                    assemble(it, payload)
+                    assemble(it, batch)
                 }
             }
 
             return assemblyResults
-                .map { it.await() }
-                .associateByTo(RegionBatch()) { it.role }
+                    .map { it.await() }
+                    .associateByTo(RegionBatch()) { it.role }
         }
 
         override fun close() {

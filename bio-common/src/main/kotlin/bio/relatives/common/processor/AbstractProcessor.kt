@@ -1,22 +1,7 @@
 package bio.relatives.common.processor
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.actor
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -196,10 +181,10 @@ abstract class AbstractProcessor<P : Any, R : Any>(
         }
 
         /**
-         * Contains the processing logic of the provided [payload] in [parentScope]
+         * Contains the processing logic of the provided [batch] in [parentScope]
          * of the parent actor.
          */
-        protected abstract suspend fun process(parentScope: CoroutineScope, payload: P): R
+        protected abstract suspend fun process(parentScope: CoroutineScope, batch: P): R
 
         /**
          * Internal processing function, used to put [action] into the queue.

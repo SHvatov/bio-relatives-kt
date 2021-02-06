@@ -1,6 +1,5 @@
 package bio.relatives.common.processor
 
-import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.comparator.CompareCtx
 import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult

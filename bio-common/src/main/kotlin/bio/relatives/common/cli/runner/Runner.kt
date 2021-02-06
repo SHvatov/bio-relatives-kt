@@ -1,6 +1,5 @@
 package bio.relatives.common.cli.runner
 
-import bio.relatives.common.model.ComparatorType
 import java.nio.file.Path
 
 /**
@@ -8,7 +7,6 @@ import java.nio.file.Path
  */
 interface Runner {
     fun run(
-            comparatorType: ComparatorType,
             pathToFeatureFile: Path,
             pathToFatherFile: Path,
             pathToMotherFile: Path,

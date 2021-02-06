@@ -1,6 +1,6 @@
 package bio.relatives.common.cli.command
 
-import bio.relatives.common.cli.runner.Runner
+import bio.relatives.common.cli.runner.RunnerFactory
 import bio.relatives.common.model.ComparatorType
 import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli
@@ -16,7 +16,7 @@ import java.nio.file.Paths
 @Component
 class ComparisonCommand : Subcommand("-compare", "Comparison of three genomes") {
 
-    lateinit var runner: Runner
+    lateinit var runnerFactory: RunnerFactory
 
     val comparatorType by option(
             ArgType.Choice<ComparatorType>(),
@@ -49,8 +49,7 @@ class ComparisonCommand : Subcommand("-compare", "Comparison of three genomes") 
     )
 
     override fun execute() {
-        runner.run(
-                comparatorType,
+        runnerFactory.create(comparatorType).run(
                 Paths.get(pathToFeatureFile!!),
                 Paths.get(pathToFatherFile!!),
                 Paths.get(pathToMotherFile!!),

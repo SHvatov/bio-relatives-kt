@@ -1,6 +1,7 @@
-package bio.relatives
+package bio.relatives.common
 
 import bio.relatives.common.cli.parser.ArgParserFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -11,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 
 @SpringBootApplication
 open class BioRelatives : CommandLineRunner {
+    @Autowired
     private lateinit var argParserFactory: ArgParserFactory
 
     override fun run(args: Array<String>) {

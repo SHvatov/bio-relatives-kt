@@ -16,12 +16,4 @@
         <maven.compiler.target>14</maven.compiler.target>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.shvatov</groupId>
-            <artifactId>bio-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
-
 </project>

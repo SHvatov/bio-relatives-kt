@@ -1,4 +1,4 @@
-package bio.relatives.test.app.runner
+package bio.relatives.runner
 
 import bio.relatives.common.cli.runner.Runner
 import bio.relatives.common.model.ComparatorType

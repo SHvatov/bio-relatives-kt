@@ -20,31 +20,31 @@ class ComparisonCommand : Subcommand("-compare", "Comparison of three genomes") 
 
     val comparatorType by option(
             ArgType.Choice<ComparatorType>(),
-            shortName = "-ct",
+            shortName = "ct",
             description = "Type of comparator"
     ).default(ComparatorType.NAIVE)
 
     val pathToFeatureFile by option(
             ArgType.String,
-            shortName = "-ff",
+            shortName = "ff",
             description = "Path to feature file"
     )
 
     val pathToFatherFile by option(
             ArgType.String,
-            shortName = "-fgf",
+            shortName = "fgf",
             description = "Path to father genome file"
     )
 
     val pathToMotherFile by option(
             ArgType.String,
-            shortName = "-mgf",
+            shortName = "mgf",
             description = "Path to mother genome file"
     )
 
     val pathToSonFile by option(
             ArgType.String,
-            shortName = "-sgf",
+            shortName = "sgf",
             description = "Path to son genome file"
     )
 

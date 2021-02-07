@@ -3,7 +3,9 @@ package bio.relatives.bio.y.str.parser
 import bio.relatives.bio.y.str.model.MarkerFeature
 import bio.relatives.common.model.Feature
 import bio.relatives.common.parser.FeatureParser
+import bio.relatives.common.parser.FeatureParser.Companion.FEATURE_FILE_EXTENSION
 import bio.relatives.common.utils.ALLOWED_NUCLEOTIDES
+import bio.relatives.common.utils.isValid
 import org.springframework.stereotype.Component
 import java.nio.file.Path
 import java.util.regex.Pattern
@@ -14,7 +16,7 @@ import java.util.regex.Pattern
 @Component
 class MarkerFeatureParser : FeatureParser {
     override fun parseFeatures(featureFilePath: Path): List<Feature> {
-        isValidFile(featureFilePath)
+        featureFilePath.isValid(requiredExtension = FEATURE_FILE_EXTENSION)
 
         val res = mutableListOf<MarkerFeature>()
 

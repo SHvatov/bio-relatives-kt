@@ -15,42 +15,42 @@ import java.nio.file.Paths
  * @author Created by Vladislav Marchenko on 04.02.2021
  */
 /**
- * TODO("add description")
+ * Implementation of comparison command of the CLI
  */
 @ExperimentalCli
 @Component
 class ComparisonCommand @Autowired constructor(
         private val runner: Runner
-) : Subcommand("-compare", "Comparison of three genomes") {
+) : Subcommand(COMPARISON_COMMAND_NAME, COMPARISON_COMMAND_DESCRIPTION) {
 
     private val comparatorType by option(
             ArgType.Choice<ComparatorType>(),
-            shortName = "ct",
-            description = "Type of comparator"
+            shortName = COMPARATOR_TYPE_OPTION_SHORT_NAME,
+            description = COMPARATOR_TYPE_OPTION_DESCRIPTION
     ).default(ComparatorType.NAIVE)
 
     private val pathToFeatureFile by option(
             ArgType.String,
-            shortName = "ff",
-            description = "Path to feature file"
+            shortName = PATH_TO_FEATURE_FILE_OPTION_SHORT_NAME,
+            description = PATH_TO_FEATURE_FILE_OPTION_DESCRIPTION
     )
 
     private val pathToFatherFile by option(
             ArgType.String,
-            shortName = "fgf",
-            description = "Path to father genome file"
+            shortName = PATH_TO_FATHER_FILE_OPTION_SHORT_NAME,
+            description = PATH_TO_FATHER_FILE_OPTION_DESCRIPTION
     )
 
     private val pathToMotherFile by option(
             ArgType.String,
-            shortName = "mgf",
-            description = "Path to mother genome file"
+            shortName = PATH_TO_MOTHER_FILE_OPTION_SHORT_NAME,
+            description = PATH_TO_MOTHER_FILE_OPTION_DESCRIPTION
     )
 
     private val pathToSonFile by option(
             ArgType.String,
-            shortName = "sgf",
-            description = "Path to son genome file"
+            shortName = PATH_TO_SON_FILE_OPTION_SHORT_NAME,
+            description = PATH_TO_SON_FILE_OPTION_DESCRIPTION
     )
 
     override fun execute() {
@@ -59,7 +59,29 @@ class ComparisonCommand @Autowired constructor(
                         Paths.get(pathToFeatureFile!!),
                         Paths.get(pathToFatherFile!!),
                         Paths.get(pathToMotherFile!!),
-                        Paths.get(pathToSonFile!!))
+                        Paths.get(pathToSonFile!!)
+                )
         )
+    }
+
+    companion object {
+        private const val COMPARISON_COMMAND_NAME = "-compare"
+
+        private const val COMPARISON_COMMAND_DESCRIPTION = "Comparison of three genomes"
+
+        private const val COMPARATOR_TYPE_OPTION_SHORT_NAME = "ct"
+        private const val COMPARATOR_TYPE_OPTION_DESCRIPTION = "Type of comparator"
+
+        private const val PATH_TO_FEATURE_FILE_OPTION_SHORT_NAME = "ff"
+        private const val PATH_TO_FEATURE_FILE_OPTION_DESCRIPTION = "Path to feature file"
+
+        private const val PATH_TO_FATHER_FILE_OPTION_SHORT_NAME = "fgf"
+        private const val PATH_TO_FATHER_FILE_OPTION_DESCRIPTION = "Path to father genome file"
+
+        private const val PATH_TO_MOTHER_FILE_OPTION_SHORT_NAME = "mgf"
+        private const val PATH_TO_MOTHER_FILE_OPTION_DESCRIPTION = "Path to mother genome file"
+
+        private const val PATH_TO_SON_FILE_OPTION_SHORT_NAME = "sgf"
+        private const val PATH_TO_SON_FILE_OPTION_DESCRIPTION = "Path to son genome file"
     }
 }

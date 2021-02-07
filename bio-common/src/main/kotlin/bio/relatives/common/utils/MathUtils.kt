@@ -44,7 +44,11 @@ fun <T : Number> calculateAdditionRelativeErrorRate(valueToError: Map<T, T>): Do
             valueToError.map { it.key.toDouble() }.sum()
 }
 
-fun round(valueToRound: Double, placesNum: Byte): Double = (valueToRound * 10.0.pow(placesNum.toDouble())).roundToInt() / 10.0.pow(placesNum.toDouble())
+/**
+ * Rounds a [valueToRound] to [placesNum] decimal places
+ */
+fun round(valueToRound: Double, placesNum: Byte): Double =
+        (valueToRound * 10.0.pow(placesNum.toDouble())).roundToInt() / 10.0.pow(placesNum.toDouble())
 
 
 

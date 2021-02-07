@@ -3,7 +3,9 @@ package bio.relatives.bio.distance.parser
 import bio.relatives.bio.distance.model.BEDFeature
 import bio.relatives.common.model.Feature
 import bio.relatives.common.parser.FeatureParser
+import bio.relatives.common.parser.FeatureParser.Companion.FEATURE_FILE_EXTENSION
 import bio.relatives.common.parser.FeatureParser.Companion.MAX_FEATURE_SIZE
+import bio.relatives.common.utils.isValid
 import org.springframework.stereotype.Component
 import java.nio.file.Path
 
@@ -13,7 +15,7 @@ import java.nio.file.Path
 @Component
 class BEDFeatureParser : FeatureParser {
     override fun parseFeatures(featureFilePath: Path): List<Feature> {
-        isValidFile(featureFilePath)
+        featureFilePath.isValid(requiredExtension = FEATURE_FILE_EXTENSION)
 
         val res = mutableListOf<BEDFeature>()
 

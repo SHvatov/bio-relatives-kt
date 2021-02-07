@@ -6,6 +6,10 @@ import kotlin.math.min
  * @author Created by Vladislav Marchenko on 03.02.2021
  */
 
+/**
+ * Sets the sequences ([first] and [second]) to the same length
+ * and discards sections with unknown nucleotides from them
+ */
 fun getNormalizedAlignments(first: String, second: String): Pair<String, String> {
 
     val firstGenome = StringBuilder()
@@ -34,5 +38,8 @@ fun getNormalizedAlignments(first: String, second: String): Pair<String, String>
     return Pair(firstGenome.toString(), secondGenome.toString())
 }
 
+/**
+ * Determines if the [nucleotide] is unknown
+ */
 private fun isUnknownNucleotide(nucleotide: Char): Boolean = nucleotide == UNKNOWN_NUCLEOTIDE
 

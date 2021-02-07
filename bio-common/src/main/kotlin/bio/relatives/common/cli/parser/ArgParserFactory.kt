@@ -1,5 +1,6 @@
 package bio.relatives.common.cli.parser
 
+import bio.relatives.common.cli.runner.Runner
 import kotlinx.cli.ArgParser
 
 /**
@@ -7,7 +8,7 @@ import kotlinx.cli.ArgParser
  */
 interface ArgParserFactory {
     /**
-     * TODO("add description")
+     * Creates [ArgParser]
      */
-    fun create(): ArgParser
+    fun create(runner: Runner): ArgParser
 }

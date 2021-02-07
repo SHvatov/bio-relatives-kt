@@ -5,7 +5,7 @@ package bio.relatives.common.cli.runner
  */
 interface Runner : AutoCloseable {
     /**
-     * TODO("add description")
+     * Runes our application logic with [context]
      */
     fun run(context: RunnerCtx)
 }

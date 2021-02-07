@@ -22,19 +22,6 @@ fun getNormalizedAlignments(first: String, second: String): Pair<String, String>
         }
     }
 
-    if (firstGenome.length < secondGenome.length) {
-        for (i in first.length until second.length) {
-            if (!isUnknownNucleotide(second[i])) {
-                secondGenome.append(i)
-            }
-        }
-    } else {
-        for (i in second.length until first.length) {
-            if (!isUnknownNucleotide(first[i])) {
-                firstGenome.append(i)
-            }
-        }
-    }
     return Pair(firstGenome.toString(), secondGenome.toString())
 }
 

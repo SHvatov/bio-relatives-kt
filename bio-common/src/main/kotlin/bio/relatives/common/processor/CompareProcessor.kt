@@ -24,10 +24,10 @@ class CompareProcessor(
             val results =
                 mutableMapOf<ComparisonParticipants, Deferred<ComparisonAlgorithmResult>>()
             for (between in ComparisonParticipants.COMPARISON_PAIRS) {
-                val (first, second) = batch.payload[between.firstRole] to batch.payload[between.secondRole]
+                val (first, second) = batch.regionsByRole[between.firstRole] to batch.regionsByRole[between.secondRole]
                 if (first != null && second != null) {
                     results[between] = parentScope.async {
-                        compareCtx.algorithm.compare(first, second, batch.feature)
+                        compareCtx.algorithm.compare(batch.feature, first, second)
                     }
                 }
             }

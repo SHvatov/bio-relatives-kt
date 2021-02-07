@@ -6,5 +6,5 @@ package bio.relatives.common.model
  */
 data class RegionBatch(
         val feature: Feature,
-        val payload: HashMap<RoleAware.Role, Region>
+        val regionsByRole: HashMap<RoleAware.Role, Region>
 )

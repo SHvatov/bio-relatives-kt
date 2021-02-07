@@ -12,5 +12,5 @@ interface GenomeComparatorAlgorithm {
     /**
      * Compares provided [Region] instances and returns the result as [ComparisonAlgorithmResult].
      */
-    fun compare(left: Region, right: Region, feature: Feature): ComparisonAlgorithmResult
+    fun compare(feature: Feature, left: Region, right: Region): ComparisonAlgorithmResult
 }

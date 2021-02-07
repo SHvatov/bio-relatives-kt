@@ -1,6 +1,6 @@
 package bio.relatives.bio.distance.comparator
 
-import bio.relatives.bio.distance.model.BEDFeature
+import bio.relatives.bio.distance.model.BedFeature
 import bio.relatives.common.model.Region
 import bio.relatives.common.model.RoleAware
 import org.junit.Test
@@ -42,18 +42,18 @@ class BioDistanceGenomeComparatorAlgorithmTest {
 
         private val RIGHT = Region(RIGHT_ROLE, RIGHT_SEQUENCE, RIGHT_BASE_QUALITIES, GENE, CHR, START, END)
 
-        private val BIO_DISTANCE_GENOME_COMPARATOR_ALGORITHM = BioDistanceGenomeComparatorAlgorithm()
+        private val BIO_DISTANCE_GENOME_COMPARATOR_ALGORITHM = LevensteinDistanceAlgorithm()
 
-        private val BED_FEATURE = BEDFeature(CHR, GENE, START, END)
+        private val BED_FEATURE = BedFeature(CHR, GENE, START, END)
 
-        private const val ERROR_RATE = 77.26
+        private const val ERROR_RATE = 77.25531914893617
         private const val SIMILARITY = 85.0
     }
 
 
     @Test
     fun compare() {
-        val res = BIO_DISTANCE_GENOME_COMPARATOR_ALGORITHM.compare(LEFT, RIGHT, BED_FEATURE)
+        val res = BIO_DISTANCE_GENOME_COMPARATOR_ALGORITHM.compare(BED_FEATURE, LEFT, RIGHT)
         assertEquals(ERROR_RATE, res.errorRate)
         assertEquals(SIMILARITY, res.similarityPercentage)
     }

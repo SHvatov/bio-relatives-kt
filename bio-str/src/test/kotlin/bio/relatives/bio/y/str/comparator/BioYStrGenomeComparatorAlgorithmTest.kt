@@ -44,17 +44,17 @@ class BioYStrGenomeComparatorAlgorithmTest {
 
         private val RIGHT = Region(RIGHT_ROLE, RIGHT_SEQUENCE, RIGHT_BASE_QUALITIES, GENE, CHR, START, END)
 
-        private val BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM = BioYStrGenomeComparatorAlgorithm()
+        private val BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM = MarkerStrComparatorAlgorithm()
 
         private val Y_STR_FEATURE = MarkerFeature(GENE, CHR, START, END, REPEAT_MOTIF)
 
-        private const val ERROR_RATE = 77.3
+        private const val ERROR_RATE = 77.29787234042553
         private const val SIMILARITY = 75.0
     }
 
     @Test
     fun compare() {
-        val res = BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM.compare(LEFT, RIGHT, Y_STR_FEATURE)
+        val res = BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM.compare(Y_STR_FEATURE, LEFT, RIGHT)
         assertEquals(ERROR_RATE, res.errorRate)
         assertEquals(SIMILARITY, res.similarityPercentage)
     }

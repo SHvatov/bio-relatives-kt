@@ -4,23 +4,22 @@ import bio.relatives.common.comparator.GenomeComparatorAlgorithm
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.utils.calculateAverageQuality
 import bio.relatives.common.utils.getNormalizedAlignments
-import bio.relatives.common.utils.round
 import java.lang.Integer.max
 import java.lang.Integer.min
 
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
-class BioDistanceGenomeComparatorAlgorithm : GenomeComparatorAlgorithm {
+class LevensteinDistanceAlgorithm : GenomeComparatorAlgorithm {
 
-    override fun compare(left: Region, right: Region, feature: Feature): ComparisonResult.ComparisonAlgorithmResult {
+    override fun compare(feature: Feature, left: Region, right: Region): ComparisonResult.ComparisonAlgorithmResult {
 
-        val temp: Pair<String, String> = getNormalizedAlignments(left.sequence, right.sequence)
+        val temp = getNormalizedAlignments(left.sequence, right.sequence)
 
-        val f: String = temp.first
-        val s: String = temp.second
-
+        val f = temp.first
+        val s = temp.second
 
         var table = IntArray(s.length + 1)
 
@@ -39,8 +38,8 @@ class BioDistanceGenomeComparatorAlgorithm : GenomeComparatorAlgorithm {
 
         val difference = current[s.length]
         val length = max(f.length, s.length)
-        val similarityPercent = round(100.0 - difference.toDouble() / length.toDouble() * 100.0, 2)
-        val errorRate = round(100 - arrayOf(*left.qualities, *right.qualities).average(), 2)
+        val similarityPercent = 100.0 - difference.toDouble() / length.toDouble() * 100.0
+        val errorRate = 100 - calculateAverageQuality(listOf(*left.qualities, *right.qualities))
 
         return ComparisonResult.ComparisonAlgorithmResult(feature, similarityPercent, errorRate)
     }

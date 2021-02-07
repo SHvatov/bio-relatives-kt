@@ -55,7 +55,8 @@ class ComparisonCommand @Autowired constructor(
 
     override fun execute() {
         runner.run(
-                RunnerCtx(comparatorType,
+                RunnerCtx(
+                        comparatorType,
                         Paths.get(pathToFeatureFile!!),
                         Paths.get(pathToFatherFile!!),
                         Paths.get(pathToMotherFile!!),
@@ -64,24 +65,24 @@ class ComparisonCommand @Autowired constructor(
         )
     }
 
-    companion object {
-        private const val COMPARISON_COMMAND_NAME = "-compare"
+    private companion object {
+        const val COMPARISON_COMMAND_NAME = "-compare"
 
-        private const val COMPARISON_COMMAND_DESCRIPTION = "Comparison of three genomes"
+        const val COMPARISON_COMMAND_DESCRIPTION = "Comparison of three genomes"
 
-        private const val COMPARATOR_TYPE_OPTION_SHORT_NAME = "ct"
-        private const val COMPARATOR_TYPE_OPTION_DESCRIPTION = "Type of comparator"
+        const val COMPARATOR_TYPE_OPTION_SHORT_NAME = "ct"
+        const val COMPARATOR_TYPE_OPTION_DESCRIPTION = "Type of comparator"
 
-        private const val PATH_TO_FEATURE_FILE_OPTION_SHORT_NAME = "ff"
-        private const val PATH_TO_FEATURE_FILE_OPTION_DESCRIPTION = "Path to feature file"
+        const val PATH_TO_FEATURE_FILE_OPTION_SHORT_NAME = "ff"
+        const val PATH_TO_FEATURE_FILE_OPTION_DESCRIPTION = "Path to feature file"
 
-        private const val PATH_TO_FATHER_FILE_OPTION_SHORT_NAME = "fgf"
-        private const val PATH_TO_FATHER_FILE_OPTION_DESCRIPTION = "Path to father genome file"
+        const val PATH_TO_FATHER_FILE_OPTION_SHORT_NAME = "fgf"
+        const val PATH_TO_FATHER_FILE_OPTION_DESCRIPTION = "Path to father genome file"
 
-        private const val PATH_TO_MOTHER_FILE_OPTION_SHORT_NAME = "mgf"
-        private const val PATH_TO_MOTHER_FILE_OPTION_DESCRIPTION = "Path to mother genome file"
+        const val PATH_TO_MOTHER_FILE_OPTION_SHORT_NAME = "mgf"
+        const val PATH_TO_MOTHER_FILE_OPTION_DESCRIPTION = "Path to mother genome file"
 
-        private const val PATH_TO_SON_FILE_OPTION_SHORT_NAME = "sgf"
-        private const val PATH_TO_SON_FILE_OPTION_DESCRIPTION = "Path to son genome file"
+        const val PATH_TO_SON_FILE_OPTION_SHORT_NAME = "sgf"
+        const val PATH_TO_SON_FILE_OPTION_DESCRIPTION = "Path to son genome file"
     }
 }

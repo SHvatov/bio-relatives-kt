@@ -11,21 +11,10 @@ import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import bio.relatives.common.utils.calculateAdditionRelativeErrorRate
 import bio.relatives.common.utils.calculateAverageQuality
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
+import bio.relatives.common.utils.round
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
@@ -135,9 +124,9 @@ class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
                 ) / 2
             val genomeAbsoluteErrorRate = genomeRelativeErrorRate * genomeAverageSimilarity
             return GenomeResult(
-                genomeAverageSimilarity,
-                genomeAbsoluteErrorRate,
-                chromosomeAnalysisResults
+                    round(genomeAverageSimilarity, 3),
+                    round(genomeAbsoluteErrorRate, 3),
+                    chromosomeAnalysisResults
             )
         }
 

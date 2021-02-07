@@ -8,7 +8,7 @@ import kotlinx.cli.ArgParser
  */
 interface ArgParserFactory {
     /**
-     * Creates [ArgParser]
+     * Creates [ArgParser] for parsing arguments of command line
      */
     fun create(runner: Runner): ArgParser
 }

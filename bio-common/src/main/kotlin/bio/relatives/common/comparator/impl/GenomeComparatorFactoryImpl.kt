@@ -1,7 +1,9 @@
-package bio.relatives.common.comparator
+package bio.relatives.common.comparator.impl
 
 import bio.relatives.common.assembler.RegionBatch
-import bio.relatives.common.comparator.impl.GenomeComparatorImpl
+import bio.relatives.common.comparator.CompareCtxFactory
+import bio.relatives.common.comparator.GenomeComparator
+import bio.relatives.common.comparator.GenomeComparatorFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -15,8 +17,8 @@ import org.springframework.stereotype.Component
 @ExperimentalCoroutinesApi
 @Component("GenomeComparatorFactory")
 class GenomeComparatorFactoryImpl @Autowired constructor(
-    private val compareCtxFactory: CompareCtxFactory
+        private val compareCtxFactory: CompareCtxFactory
 ) : GenomeComparatorFactory {
     override fun create(inputChannel: ReceiveChannel<RegionBatch>): GenomeComparator =
-        GenomeComparatorImpl(compareCtxFactory.create(), inputChannel)
+            GenomeComparatorImpl(compareCtxFactory.create(), inputChannel)
 }

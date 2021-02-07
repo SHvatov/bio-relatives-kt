@@ -4,16 +4,8 @@ import bio.relatives.common.assembler.AssemblyCtx
 import bio.relatives.common.assembler.GenomeAssembler
 import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.processor.AssemblyProcessor
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
@@ -49,6 +41,7 @@ class GenomeAssemblerImpl(
     /**
      * Processor, which represents a separate coroutine, which will be used
      * for the assembling of the genome.
+     * todo: make lazy
      */
     private val processor = AssemblyProcessor(assembleCtx, scope)
 

@@ -1,0 +1,3 @@
+package bio.relatives.common.comparator
+
+internal class GenomeComparatorImplTest

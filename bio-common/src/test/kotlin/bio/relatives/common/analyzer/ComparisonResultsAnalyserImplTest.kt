@@ -1,0 +1,3 @@
+package bio.relatives.common.analyzer
+
+internal class ComparisonResultsAnalyserImplTest

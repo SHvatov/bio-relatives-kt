@@ -20,7 +20,7 @@ fun validateChrom(aware: ChromosomeAware) {
 
         require(chromosome in ALLOWED_CHROMOSOMES) {
             "\"chromosome\" must be one of the following: " +
-                ALLOWED_CHROMOSOMES.joinToString()
+                    ALLOWED_CHROMOSOMES.joinToString()
         }
     }
 }
@@ -35,6 +35,14 @@ fun validateChromPosition(aware: ChromosomePositionAware) {
 
 fun validateNucleotideSequence(aware: NucleotideSequenceAware) {
     with(aware) {
+        require(sequence.isNotBlank()) {
+            "\"sequence\" must not be an empty string"
+        }
+
+        require(sequence.length == qualities.size) {
+            "\"sequence\" and \"qualities\" must be of the same size"
+        }
+
         require(sequence.all { it in ALLOWED_NUCLEOTIDES + UNKNOWN_NUCLEOTIDE }) {
             "\"sequence\" must be formed from valid nucleotides - " +
                     (ALLOWED_NUCLEOTIDES + UNKNOWN_NUCLEOTIDE).toCharArray().joinToString()

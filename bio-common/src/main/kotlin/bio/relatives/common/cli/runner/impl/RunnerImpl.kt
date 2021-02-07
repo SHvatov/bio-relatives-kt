@@ -5,10 +5,11 @@ import bio.relatives.common.assembler.GenomeAssemblerFactory
 import bio.relatives.common.cli.runner.Runner
 import bio.relatives.common.cli.runner.RunnerCtx
 import bio.relatives.common.comparator.GenomeComparatorFactory
-import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.RoleAware
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.nio.file.Path
@@ -17,50 +18,41 @@ import java.nio.file.Path
  * @author Created by Vladislav Marchenko on 06.02.2021
  */
 @Component
+@ObsoleteCoroutinesApi
+@ExperimentalCoroutinesApi
 class RunnerImpl @Autowired constructor(
-        private val genomeAssemblerFactory: GenomeAssemblerFactory,
-        private val genomeComparatorFactory: GenomeComparatorFactory,
-        private val comparisonResultsAnalyserFactory: ComparisonResultsAnalyserFactory
+    private val assemblerFactory: GenomeAssemblerFactory,
+    private val comparatorFactory: GenomeComparatorFactory,
+    private val analyserFactory: ComparisonResultsAnalyserFactory
 ) : Runner {
-
-    private val scope = CoroutineScope(
-            SupervisorJob() + CoroutineName("Iterator via comparator")
-    )
-
-    private lateinit var genomeComparatorChannel: ReceiveChannel<ComparisonResult>
-
-    override fun run(context: RunnerCtx) {
-        val genomeAssembler = genomeAssemblerFactory.create(
-                context.pathToFeatureFile,
-                getRoleMap(context)
+    override fun run(context: RunnerCtx) = runBlocking {
+        val assembler = assemblerFactory.create(
+            context.pathToFeatureFile,
+            getRoleMap(context)
         )
 
-        val genomeComparator = genomeComparatorFactory.create(genomeAssembler.assemble())
+        assembler.use { asm ->
+            val assemblyChannel = asm.assemble()
+            val comparator = comparatorFactory.create(assemblyChannel)
 
-        val genomeAnalyser = comparisonResultsAnalyserFactory.create()
+            comparator.use { cmp ->
+                val comparisonChannel = cmp.compare()
+                val analyzer = analyserFactory.create()
 
-        genomeComparatorChannel = genomeComparator.compare()
+                analyzer.use {
+                    comparisonChannel.consumeEach { result ->
+                        it.store(result)
+                    }
 
-        val genomeComparatorChannelIterator = genomeComparatorChannel.iterator()
-
-        scope.launch {
-            while (genomeComparatorChannelIterator.hasNext()) {
-                genomeAnalyser.store(genomeComparatorChannelIterator.next())
+                    println(it.analyse())
+                }
             }
         }
-
-        println(genomeAnalyser.analyse())
-    }
-
-    override fun close() {
-        scope.cancel()
-
-        genomeComparatorChannel.cancel()
     }
 
     private fun getRoleMap(context: RunnerCtx): Map<RoleAware.Role, Path> = hashMapOf(
-            Pair(RoleAware.Role.SON, context.pathToSonFile),
-            Pair(RoleAware.Role.FATHER, context.pathToFatherFile),
-            Pair(RoleAware.Role.MOTHER, context.pathToMotherFile)
+        Pair(RoleAware.Role.SON, context.pathToSonFile),
+        Pair(RoleAware.Role.FATHER, context.pathToFatherFile),
+        Pair(RoleAware.Role.MOTHER, context.pathToMotherFile)
     )
 }

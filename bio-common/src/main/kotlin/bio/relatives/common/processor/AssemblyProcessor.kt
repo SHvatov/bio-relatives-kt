@@ -48,7 +48,8 @@ class AssemblyProcessor(
 
             return RegionBatch(batch, assemblyResults
                     .map { it.await() }
-                    .associateByTo(HashMap()) { it.role })
+                    .associateByTo(HashMap()) { it.role }
+            )
         }
 
         override fun close() {

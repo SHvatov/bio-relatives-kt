@@ -11,19 +11,17 @@ import java.nio.file.Path
  */
 @Component
 class BedFeatureParser : AbstractFeatureParser() {
-    override fun provider(rows: Array<String>): Feature {
+    override fun createFeature(startPos: Int, endPos: Int, rows: Array<String>): Feature {
         val chr = rows[0]
-        val start = rows[1].toInt()
-        val end = rows[2].toInt()
         val gene = rows[3]
-        return BedFeature(chr, gene, start, end)
+        return BedFeature(chr, gene, startPos, endPos)
     }
 
     override fun validateRows(rows: Array<String>, featureFilePath: Path) {
         require(rows.size == 4) {
             "Error occurred during reading from the file [$featureFilePath]: " +
-                    "incorrect number of rows in the table. Expected 4 (chrom, start, end, gene name), got ${rows.size}"
+                "incorrect number of rows in the table. " +
+                "Expected 4 (chrom, start, end, gene name), got ${rows.size}"
         }
     }
-
 }

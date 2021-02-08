@@ -1,6 +1,6 @@
-package bio.relatives.bio.y.str.comparator
+package bio.relatives.bio.y_str.comparator
 
-import bio.relatives.bio.y.str.model.MarkerFeature
+import bio.relatives.bio.y_str.model.MarkerFeature
 import bio.relatives.common.comparator.GenomeComparatorAlgorithm
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.Feature
@@ -15,7 +15,11 @@ import java.lang.Math.max
  */
 class MarkerStrComparatorAlgorithm : GenomeComparatorAlgorithm {
 
-    override fun compare(feature: Feature, left: Region, right: Region): ComparisonResult.ComparisonAlgorithmResult {
+    override fun compare(
+        feature: Feature,
+        left: Region,
+        right: Region
+    ): ComparisonResult.ComparisonAlgorithmResult {
         require(feature is MarkerFeature) {
             "Feature is not MarkerFeature"
         }
@@ -34,7 +38,8 @@ class MarkerStrComparatorAlgorithm : GenomeComparatorAlgorithm {
             secondNum++
         }
 
-        val similarityPercent = min(firstNum, secondNum).toDouble() / max(firstNum, secondNum).toDouble() * 100.0
+        val similarityPercent =
+            min(firstNum, secondNum).toDouble() / max(firstNum, secondNum).toDouble() * 100.0
         val errorRate = 100 - calculateAverageQuality(listOf(*left.qualities, *right.qualities))
 
         return ComparisonResult.ComparisonAlgorithmResult(feature, similarityPercent, errorRate)

@@ -50,12 +50,12 @@ abstract class AbstractFeatureParser : FeatureParser {
     /**
      * Creates [Feature] from rows
      */
-    abstract fun provider(rows: Array<String>): Feature
+    protected abstract fun provider(rows: Array<String>): Feature
 
     /**
      * Validates count of rows
      */
-    abstract fun validateRows(rows: Array<String>, featureFilePath: Path)
+    protected abstract fun validateRows(rows: Array<String>, featureFilePath: Path)
 
     private companion object {
         /**

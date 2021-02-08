@@ -14,8 +14,8 @@ class MarkerFeatureParserTest {
     companion object {
         private val PATH_TO_CORRECT_BED: Path = Paths.get("src/test/resources/correct.bed")
         private val PATH_TO_INCORRECT_BED: Path = Paths.get("src/test/resources/incorrect.bed")
-        private val FIRST_FEATURE = MarkerFeature("chr1", "SCYL3", 15000, 15119, Pattern.compile("agct"))
-        private val SECOND_FEATURE = MarkerFeature("chr1", "SCYL3", 20000, 20119, Pattern.compile("agc"))
+        private val FIRST_FEATURE = MarkerFeature("SCYL3", "chr1", 15000, 15119, Pattern.compile("agct"))
+        private val SECOND_FEATURE = MarkerFeature("SCYL3", "chr1", 20000, 20119, Pattern.compile("agc"))
         private val MFP = MarkerFeatureParser()
     }
 

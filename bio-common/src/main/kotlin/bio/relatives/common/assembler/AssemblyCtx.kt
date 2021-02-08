@@ -1,7 +1,7 @@
 package bio.relatives.common.assembler
 
 import bio.relatives.common.model.RoleAware.Role
-import bio.relatives.common.parser.AbstractFeatureParser
+import bio.relatives.common.parser.FeatureParser
 import bio.relatives.common.parser.RegionParserFactory
 import java.nio.file.Path
 
@@ -31,7 +31,7 @@ interface AssemblyCtx {
     val regionAssemblerFactory: RegionAssemblerFactory
 
     /**
-     * [AbstractFeatureParser] extension, used to parse feature from corresponding file.
+     * [FeatureParser] impl, used to parse feature from corresponding file.
      */
-    val featureParser: AbstractFeatureParser
+    val featureParser: FeatureParser
 }

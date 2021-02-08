@@ -8,8 +8,9 @@ import java.util.regex.Pattern
  * @author Created by Vladislav Marchenko on 02.02.2021
  */
 class MarkerFeature(
-        override val gene: String,
-        override val chromosome: String,
-        override val start: Int,
-        override val end: Int,
-        override val repeatMotif: Pattern) : Feature, RepeatMotifAware
+    override val gene: String,
+    override val chromosome: String,
+    override val start: Int,
+    override val end: Int,
+    override val repeatMotif: Pattern
+) : Feature, RepeatMotifAware

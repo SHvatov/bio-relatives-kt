@@ -7,8 +7,7 @@ import kotlin.math.min
  */
 
 /**
- * Sets the sequences ([first] and [second]) to the same length
- * and discards sections with unknown nucleotides from them
+ * Discards sections with unknown nucleotides from the sequences ([first] and [second])
  */
 fun getNormalizedAlignments(first: String, second: String): Pair<String, String> {
 

@@ -18,8 +18,7 @@ class LevensteinDistanceAlgorithm : GenomeComparatorAlgorithm {
 
         val temp = getNormalizedAlignments(left.sequence, right.sequence)
 
-        val f = temp.first
-        val s = temp.second
+        val (f, s) = temp
 
         var table = IntArray(s.length + 1)
 

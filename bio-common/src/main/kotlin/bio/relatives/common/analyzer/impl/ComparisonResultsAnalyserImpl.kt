@@ -11,7 +11,6 @@ import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import bio.relatives.common.utils.calculateAdditionRelativeErrorRate
 import bio.relatives.common.utils.calculateAverageQuality
-import bio.relatives.common.utils.round
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
@@ -124,9 +123,9 @@ class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
                 ) / 2
             val genomeAbsoluteErrorRate = genomeRelativeErrorRate * genomeAverageSimilarity
             return GenomeResult(
-                    round(genomeAverageSimilarity, 3),
-                    round(genomeAbsoluteErrorRate, 3),
-                    chromosomeAnalysisResults
+                genomeAverageSimilarity,
+                genomeAbsoluteErrorRate,
+                chromosomeAnalysisResults
             )
         }
 

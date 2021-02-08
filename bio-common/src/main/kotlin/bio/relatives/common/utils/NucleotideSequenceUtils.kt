@@ -21,7 +21,7 @@ fun getNormalizedAlignments(first: String, second: String): Pair<String, String>
         }
     }
 
-    return Pair(firstGenome.toString(), secondGenome.toString())
+    return firstGenome.toString() to secondGenome.toString()
 }
 
 /**

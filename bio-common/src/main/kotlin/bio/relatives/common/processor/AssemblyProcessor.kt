@@ -2,9 +2,9 @@ package bio.relatives.common.processor
 
 import bio.relatives.common.assembler.AssemblyCtx
 import bio.relatives.common.assembler.RegionAssembler
-import bio.relatives.common.assembler.RegionBatch
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
+import bio.relatives.common.model.RegionBatch
 import bio.relatives.common.model.RoleAware
 import bio.relatives.common.parser.RegionParser
 import kotlinx.coroutines.CoroutineScope
@@ -39,16 +39,17 @@ class AssemblyProcessor(
             }
         }
 
-        override suspend fun process(parentScope: CoroutineScope, payload: Feature): RegionBatch {
+        override suspend fun process(parentScope: CoroutineScope, batch: Feature): RegionBatch {
             val assemblyResults = roles.map {
                 parentScope.async {
-                    assemble(it, payload)
+                    assemble(it, batch)
                 }
             }
 
-            return assemblyResults
-                .map { it.await() }
-                .associateByTo(RegionBatch()) { it.role }
+            return RegionBatch(batch, assemblyResults
+                    .map { it.await() }
+                    .associateByTo(HashMap()) { it.role }
+            )
         }
 
         override fun close() {

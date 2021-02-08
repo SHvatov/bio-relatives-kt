@@ -1,6 +1,7 @@
 package bio.relatives.common.utils
 
 import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 /**
@@ -40,5 +41,14 @@ fun <T : Number> calculateAverageQuality(values: List<T>): Double {
  */
 fun <T : Number> calculateAdditionRelativeErrorRate(valueToError: Map<T, T>): Double {
     return valueToError.map { it.value.toDouble() }.sum() /
-        valueToError.map { it.key.toDouble() }.sum()
+            valueToError.map { it.key.toDouble() }.sum()
 }
+
+/**
+ * Rounds a [valueToRound] to [placesNum] decimal places
+ */
+fun round(valueToRound: Double, placesNum: Byte): Double =
+        (valueToRound * 10.0.pow(placesNum.toDouble())).roundToInt() / 10.0.pow(placesNum.toDouble())
+
+
+

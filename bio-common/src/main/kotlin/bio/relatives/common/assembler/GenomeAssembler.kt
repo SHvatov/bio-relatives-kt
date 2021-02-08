@@ -1,8 +1,6 @@
 package bio.relatives.common.assembler
 
-import bio.relatives.common.model.Region
-import bio.relatives.common.model.RoleAware
-import bio.relatives.common.model.RoleAware.Role
+import bio.relatives.common.model.RegionBatch
 import kotlinx.coroutines.channels.ReceiveChannel
 
 /**
@@ -17,9 +15,3 @@ interface GenomeAssembler : AutoCloseable {
      */
     fun assemble(): ReceiveChannel<RegionBatch>
 }
-
-/**
- * @note: This is a basic alias for map, where key is a [RoleAware.Role] of the
- * person, whose genome is being parsed, while [Region] represents genome itself.
- */
-typealias RegionBatch = HashMap<Role, Region>

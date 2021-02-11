@@ -21,7 +21,7 @@
         <module>bio-test-app</module>
         <module>bio-de-bruijn</module>
         <module>bio-naive-assemble</module>
-        <module>bio-str</module>
+        <module>bio-y-str</module>
     </modules>
 
     <properties>

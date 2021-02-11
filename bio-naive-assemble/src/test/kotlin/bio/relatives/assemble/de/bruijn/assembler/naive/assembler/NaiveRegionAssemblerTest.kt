@@ -8,6 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
 
 /**
  * @author Created by Vladislav Marchenko on 21.01.2021
@@ -15,26 +16,26 @@ import org.mockito.Mockito
 internal class NaiveRegionAssemblerTest {
     @Before
     fun setUp() {
-        Mockito.`when`(TEST_FEATURE.start).thenReturn(TEST_GENOME_START)
-        Mockito.`when`(TEST_FEATURE.end).thenReturn(TEST_GENOME_END)
-        Mockito.`when`(TEST_FEATURE.gene).thenReturn(TEST_GENE)
-        Mockito.`when`(TEST_FEATURE.chromosome).thenReturn(TEST_CHR)
+        `when`(TEST_FEATURE.start).thenReturn(TEST_GENOME_START)
+        `when`(TEST_FEATURE.end).thenReturn(TEST_GENOME_END)
+        `when`(TEST_FEATURE.gene).thenReturn(TEST_GENE)
+        `when`(TEST_FEATURE.chromosome).thenReturn(TEST_CHR)
 
-        Mockito.`when`(TEST_SAMRECORDS[0].readLength).thenReturn(TEST_READ_LENGTH_1)
-        Mockito.`when`(TEST_SAMRECORDS[1].readLength).thenReturn(TEST_READ_LENGTH_2)
-        Mockito.`when`(TEST_SAMRECORDS[2].readLength).thenReturn(TEST_READ_LENGTH_3)
+        `when`(TEST_SAMRECORDS[0].readLength).thenReturn(TEST_READ_LENGTH_1)
+        `when`(TEST_SAMRECORDS[1].readLength).thenReturn(TEST_READ_LENGTH_2)
+        `when`(TEST_SAMRECORDS[2].readLength).thenReturn(TEST_READ_LENGTH_3)
 
-        Mockito.`when`(TEST_SAMRECORDS[0].readString).thenReturn(TEST_READ_STRING_1)
-        Mockito.`when`(TEST_SAMRECORDS[1].readString).thenReturn(TEST_READ_STRING_2)
-        Mockito.`when`(TEST_SAMRECORDS[2].readString).thenReturn(TEST_READ_STRING_3)
+        `when`(TEST_SAMRECORDS[0].readString).thenReturn(TEST_READ_STRING_1)
+        `when`(TEST_SAMRECORDS[1].readString).thenReturn(TEST_READ_STRING_2)
+        `when`(TEST_SAMRECORDS[2].readString).thenReturn(TEST_READ_STRING_3)
 
-        Mockito.`when`(TEST_SAMRECORDS[0].baseQualities).thenReturn(TEST_BASE_QUALITIES_1)
-        Mockito.`when`(TEST_SAMRECORDS[1].baseQualities).thenReturn(TEST_BASE_QUALITIES_2)
-        Mockito.`when`(TEST_SAMRECORDS[2].baseQualities).thenReturn(TEST_BASE_QUALITIES_3)
+        `when`(TEST_SAMRECORDS[0].baseQualities).thenReturn(TEST_BASE_QUALITIES_1)
+        `when`(TEST_SAMRECORDS[1].baseQualities).thenReturn(TEST_BASE_QUALITIES_2)
+        `when`(TEST_SAMRECORDS[2].baseQualities).thenReturn(TEST_BASE_QUALITIES_3)
 
-        Mockito.`when`(TEST_SAMRECORDS[0].start).thenReturn(TEST_READ_START_1)
-        Mockito.`when`(TEST_SAMRECORDS[1].start).thenReturn(TEST_READ_START_2)
-        Mockito.`when`(TEST_SAMRECORDS[2].start).thenReturn(TEST_READ_START_3)
+        `when`(TEST_SAMRECORDS[0].start).thenReturn(TEST_READ_START_1)
+        `when`(TEST_SAMRECORDS[1].start).thenReturn(TEST_READ_START_2)
+        `when`(TEST_SAMRECORDS[2].start).thenReturn(TEST_READ_START_3)
     }
 
     @Test

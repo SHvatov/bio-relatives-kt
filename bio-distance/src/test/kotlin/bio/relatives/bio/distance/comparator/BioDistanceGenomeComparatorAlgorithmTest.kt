@@ -3,8 +3,8 @@ package bio.relatives.bio.distance.comparator
 import bio.relatives.bio.distance.model.BedFeature
 import bio.relatives.common.model.Region
 import bio.relatives.common.model.RoleAware
+import junit.framework.Assert.assertEquals
 import org.junit.Test
-import kotlin.test.assertEquals
 
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021

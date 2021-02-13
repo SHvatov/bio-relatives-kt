@@ -9,6 +9,7 @@ import bio.relatives.common.model.AnalysisResult.GenomeResult
 import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
+import bio.relatives.common.processor.CoroutineScopeAware.DefaultExceptionHandlerProvider.createLoggingExceptionHandler
 import bio.relatives.common.utils.calculateAdditionRelativeErrorRate
 import bio.relatives.common.utils.calculateAverageQuality
 import kotlinx.coroutines.*
@@ -16,27 +17,25 @@ import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.consumeEach
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.Executors
 
 /**
  * @author shvatov
  */
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
-class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
+class ComparisonResultsAnalyserImpl(
+    /**
+     * Coroutine scope of the parent coroutine.
+     */
+    override val parentScope: CoroutineScope
+) : ComparisonResultsAnalyser {
     /**
      * Parent scope for the execution of analysing coroutine.
      */
-    private val scope = CoroutineScope(
-        SupervisorJob() +
+    override val scope = CoroutineScope(
+        parentScope.coroutineContext +
             CoroutineName("Analyzer") +
-            Executors.newSingleThreadExecutor().asCoroutineDispatcher() +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName]}:",
-                    exception
-                )
-            }
+            createLoggingExceptionHandler(LOG)
     )
 
     /**

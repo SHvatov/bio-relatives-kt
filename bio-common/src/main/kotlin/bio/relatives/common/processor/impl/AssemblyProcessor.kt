@@ -1,16 +1,17 @@
-package bio.relatives.common.processor
+package bio.relatives.common.processor.impl
 
 import bio.relatives.common.assembler.AssemblyCtx
 import bio.relatives.common.assembler.RegionAssembler
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
 import bio.relatives.common.model.RegionBatch
-import bio.relatives.common.model.RoleAware
+import bio.relatives.common.model.RoleAware.Role
 import bio.relatives.common.parser.RegionParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.async
+import java.util.EnumMap
 
 /**
  * @author shvatov
@@ -47,8 +48,8 @@ class AssemblyProcessor(
             }
 
             return RegionBatch(batch, assemblyResults
-                    .map { it.await() }
-                    .associateByTo(HashMap()) { it.role }
+                .map { it.await() }
+                .associateByTo(EnumMap(Role::class.java)) { it.role }
             )
         }
 
@@ -61,7 +62,7 @@ class AssemblyProcessor(
          * Synchronously assembles one region of the genome of the person with [role]
          * using the provided [feature].
          */
-        private fun assemble(role: RoleAware.Role, feature: Feature): Region {
+        private fun assemble(role: Role, feature: Feature): Region {
             val (parser, assembler) = assemblyToolsById.getValue(role)
             val records = parser.parseRegion(feature)
             return assembler.assemble(role, feature, records)

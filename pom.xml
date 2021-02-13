@@ -55,11 +55,24 @@
                 <version>2.19.0</version>
             </dependency>
 
+            <!-- CLI -->
+            <dependency>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kotlinx-cli-jvm</artifactId>
+                <version>0.3.1</version>
+            </dependency>
+
             <!-- Testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.7.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.1.0</version>
+                <version>5.7.1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -130,6 +143,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

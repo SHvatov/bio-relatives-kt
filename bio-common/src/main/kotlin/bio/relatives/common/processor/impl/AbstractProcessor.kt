@@ -1,12 +1,27 @@
-package bio.relatives.common.processor
+package bio.relatives.common.processor.impl
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import bio.relatives.common.processor.CoroutineScopeAware.DefaultExceptionHandlerProvider.createLoggingExceptionHandler
+import bio.relatives.common.processor.Processor
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * TODO: tests!
  * Note: Instead of separate input channel, [dispatcher] could have been used.
  * The same goes with [poller] - could have used an inner method (even suspended one)
  * in order to put the records into the queue. But we didn't want to expose inner interface.
@@ -16,40 +31,35 @@ import org.slf4j.LoggerFactory
 @ExperimentalCoroutinesApi
 abstract class AbstractProcessor<P : Any, R : Any>(
     /**
-     * Parent scope used for the structured multithreading and as as cource of the dispatchers.
+     * Parent scope used for the structured concurrency and as a source of the dispatchers.
      * It can be created with the usage of the supervisor job in order to prevent
      * the cancellation propagation.
      */
-    parentScope: CoroutineScope
-) : AutoCloseable {
+    final override val parentScope: CoroutineScope
+) : Processor<P, R> {
     /**
      * Inner channel, which is used to transfer the output of the sub-coroutines
      * to external consumers. Exposed to external consumer as [ReceiveChannel].
      */
     private val _outputChannel: Channel<R> = Channel(OUTPUT_CHANNEL_CAPACITY)
-    val outputChannel: ReceiveChannel<R> get() = _outputChannel
+    override val outputChannel: ReceiveChannel<R> get() = _outputChannel
 
     /**
      * Inner channel, which is used to transfer input data from external producers in
      * order to process them. Exposed to external producers as [SendChannel].
      */
     private val _inputChannel: Channel<P> = Channel(INPUT_CHANNEL_CAPACITY)
-    val inputChannel: SendChannel<P> get() = _inputChannel
+    override val inputChannel: SendChannel<P> get() = _inputChannel
 
     /**
      * Coroutine scope, used by the dispatcher. Uses the provided
      * thread pool as [CoroutineDispatcher]. Specifies the name of the
      * associated coroutine and exception handler, which logs the exceptions by default.
      */
-    private val scope = CoroutineScope(
+    final override val scope = CoroutineScope(
         parentScope.coroutineContext +
             CoroutineName("Processor") +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName.Key]}:",
-                    exception
-                )
-            }
+            createLoggingExceptionHandler(LOG)
     )
 
     /**
@@ -86,7 +96,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
      * Closes the channels used by the implementation. Firstly dispatcher, then
      * channels associated with sub-routines.
      */
-    override fun close() = runBlocking<Unit> {
+    override fun close() = runBlocking {
         // close the poller
         poller.cancel()
 
@@ -129,6 +139,7 @@ abstract class AbstractProcessor<P : Any, R : Any>(
             }
 
             chosenChild.dispatch(action)
+            return
         }
 
         throw IllegalStateException("Unable to dispatch an assembly task - out of retries!")

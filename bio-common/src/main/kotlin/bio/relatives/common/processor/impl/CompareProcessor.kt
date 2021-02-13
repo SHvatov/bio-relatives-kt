@@ -1,11 +1,15 @@
-package bio.relatives.common.processor
+package bio.relatives.common.processor.impl
 
 import bio.relatives.common.comparator.CompareCtx
 import bio.relatives.common.model.ComparisonParticipants
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import bio.relatives.common.model.RegionBatch
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.async
 
 /**
  * @author shvatov
@@ -31,7 +35,6 @@ class CompareProcessor(
                     }
                 }
             }
-
             return results.mapValuesTo(ComparisonResult()) { (_, deferred) -> deferred.await() }
         }
     }

@@ -1,7 +1,7 @@
 package bio.relatives.common.cli.command
 
 import bio.relatives.common.cli.runner.Runner
-import bio.relatives.common.cli.runner.RunnerCtx
+import bio.relatives.common.cli.runner.impl.RunnerCtx
 import bio.relatives.common.model.ComparatorType
 import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli

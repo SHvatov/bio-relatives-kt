@@ -4,13 +4,18 @@ import bio.relatives.common.comparator.CompareCtx
 import bio.relatives.common.comparator.GenomeComparator
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.RegionBatch
-import bio.relatives.common.processor.CompareProcessor
-import kotlinx.coroutines.*
+import bio.relatives.common.processor.CoroutineScopeAware.DefaultExceptionHandlerProvider.createLoggingExceptionHandler
+import bio.relatives.common.processor.impl.CompareProcessor
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.Executors
 
 /**
  * @author shvatov
@@ -27,22 +32,21 @@ class GenomeComparatorImpl(
     /**
      * Input channel, which will be used to fetch the data from the assembler.
      */
-    private val inputChannel: ReceiveChannel<RegionBatch>
+    private val inputChannel: ReceiveChannel<RegionBatch>,
+
+    /**
+     * Coroutine scope of the parent coroutine.
+     */
+    override val parentScope: CoroutineScope
 ) : GenomeComparator {
 
     /**
      * Parent scope for the execution of all the assembling coroutines.
      */
-    private val scope = CoroutineScope(
-        SupervisorJob() +
+    override val scope = CoroutineScope(
+        parentScope.coroutineContext +
             CoroutineName("Comparator") +
-            Executors.newFixedThreadPool(DEFAULT_CMP_THREADS).asCoroutineDispatcher() +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName]}:",
-                    exception
-                )
-            }
+            createLoggingExceptionHandler(LOG)
     )
 
     /**
@@ -70,7 +74,5 @@ class GenomeComparatorImpl(
 
     private companion object {
         val LOG: Logger = LoggerFactory.getLogger(GenomeComparatorImpl::class.java)
-
-        const val DEFAULT_CMP_THREADS = 3
     }
 }

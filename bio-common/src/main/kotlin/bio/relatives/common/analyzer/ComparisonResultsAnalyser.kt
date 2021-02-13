@@ -2,11 +2,14 @@ package bio.relatives.common.analyzer
 
 import bio.relatives.common.model.AnalysisResult
 import bio.relatives.common.model.ComparisonResult
+import bio.relatives.common.processor.CoroutineParentScopeAware
+import bio.relatives.common.processor.CoroutineScopeAware
 
 /**
  * @author shvatov
  */
-interface ComparisonResultsAnalyser : AutoCloseable {
+interface ComparisonResultsAnalyser :
+    AutoCloseable, CoroutineParentScopeAware, CoroutineScopeAware {
     /**
      * Stores the result of the comparison in local storage.
      */

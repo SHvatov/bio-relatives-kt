@@ -1,12 +1,14 @@
 package bio.relatives.common.comparator
 
 import bio.relatives.common.model.ComparisonResult
+import bio.relatives.common.processor.CoroutineParentScopeAware
+import bio.relatives.common.processor.CoroutineScopeAware
 import kotlinx.coroutines.channels.ReceiveChannel
 
 /**
  * @author shvatov
  */
-interface GenomeComparator : AutoCloseable {
+interface GenomeComparator : AutoCloseable, CoroutineParentScopeAware, CoroutineScopeAware {
     /**
      * Compares the assembled genome regions from the channel provided on initialization.
      * Starts a separate coroutine, which is responsible for the comparison of the genomes.

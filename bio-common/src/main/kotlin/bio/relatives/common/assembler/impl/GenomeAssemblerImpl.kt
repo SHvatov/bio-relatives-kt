@@ -3,12 +3,17 @@ package bio.relatives.common.assembler.impl
 import bio.relatives.common.assembler.AssemblyCtx
 import bio.relatives.common.assembler.GenomeAssembler
 import bio.relatives.common.model.RegionBatch
-import bio.relatives.common.processor.AssemblyProcessor
-import kotlinx.coroutines.*
+import bio.relatives.common.processor.CoroutineScopeAware.DefaultExceptionHandlerProvider.createLoggingExceptionHandler
+import bio.relatives.common.processor.impl.AssemblyProcessor
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.concurrent.Executors
 
 /**
  * @author shvatov
@@ -20,22 +25,21 @@ class GenomeAssemblerImpl(
      * Assembling context, which contains singletons and some additional data,
      * required for the assembling. Will be used on lower levels of the assembling.
      */
-    private val assembleCtx: AssemblyCtx
+    private val assembleCtx: AssemblyCtx,
+
+    /**
+     * Coroutine scope of the parent coroutine.
+     */
+    override val parentScope: CoroutineScope
 ) : GenomeAssembler {
 
     /**
      * Parent scope for the execution of all the assembling coroutines.
      */
-    private val scope = CoroutineScope(
-        SupervisorJob() +
+    override val scope = CoroutineScope(
+        parentScope.coroutineContext +
             CoroutineName("Assembler") +
-            Executors.newFixedThreadPool(DEFAULT_ASSEMBLY_THREADS).asCoroutineDispatcher() +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName]}:",
-                    exception
-                )
-            }
+            createLoggingExceptionHandler(LOG)
     )
 
     /**
@@ -67,7 +71,5 @@ class GenomeAssemblerImpl(
 
     private companion object {
         val LOG: Logger = LoggerFactory.getLogger(GenomeAssemblerImpl::class.java)
-
-        const val DEFAULT_ASSEMBLY_THREADS = 3
     }
 }

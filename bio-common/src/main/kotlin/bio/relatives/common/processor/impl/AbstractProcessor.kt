@@ -177,9 +177,17 @@ abstract class AbstractProcessor<P : Any, R : Any>(
 
                         val (payload, timeout) = it.unpack<P>()
                         withTimeout(timeout) {
-                            _outputChannel.send(
+                            runCatching {
                                 process(this, payload)
-                            )
+                            }.onFailure { ex ->
+                                LOG.error(
+                                    "SubProcessor failed to process " +
+                                        "the following payload [$payload]",
+                                    ex
+                                )
+                            }.onSuccess { result ->
+                                _outputChannel.send(result)
+                            }
                         }
 
                         _idle = true

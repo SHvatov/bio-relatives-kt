@@ -13,9 +13,9 @@ interface RoleAware {
     /**
      * Suggested role of the person in the inheritance tree.
      */
-    enum class Role {
-        FATHER,
-        MOTHER,
-        SON
+    enum class Role(val representation: String) {
+        FATHER("Father"),
+        MOTHER("Mother"),
+        SON("Son")
     }
 }

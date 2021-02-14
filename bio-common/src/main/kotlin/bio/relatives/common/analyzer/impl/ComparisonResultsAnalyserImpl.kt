@@ -101,8 +101,7 @@ class ComparisonResultsAnalyserImpl(
                     calculateAdditionRelativeErrorRate(
                         result.associate { it.similarityPercentage to it.errorRate }
                     ) / 2
-                val chromosomeAbsoluteErrorRate =
-                    chromosomeRelativeErrorRate * chromosomeAverageSimilarity
+                val chromosomeAbsoluteErrorRate = chromosomeRelativeErrorRate * chromosomeAverageSimilarity
 
                 chromosomeAnalysisResults.add(
                     ChromosomeResult(

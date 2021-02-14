@@ -58,7 +58,8 @@ class RunnerImpl @Autowired constructor(
                         it.store(result)
                     }
 
-                    println(it.analyse())
+                    val results = it.analyse()
+                    results.presentResults()
                 }
             }
         }

@@ -12,10 +12,8 @@ import org.springframework.stereotype.Component
 import java.nio.file.Paths
 
 /**
- * @author Created by Vladislav Marchenko on 04.02.2021
- */
-/**
  * Implementation of comparison command of the CLI
+ * @author Created by Vladislav Marchenko on 04.02.2021
  */
 @ExperimentalCli
 @Component

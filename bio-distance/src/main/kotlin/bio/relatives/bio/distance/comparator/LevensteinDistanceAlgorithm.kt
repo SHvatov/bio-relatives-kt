@@ -1,6 +1,6 @@
 package bio.relatives.bio.distance.comparator
 
-import bio.relatives.common.comparator.GenomeComparatorAlgorithm
+import bio.relatives.common.comparator.GenomeComparisonMethod
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
@@ -12,7 +12,7 @@ import java.lang.Integer.min
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
-class LevensteinDistanceAlgorithm : GenomeComparatorAlgorithm {
+class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
 
     override fun compare(feature: Feature, left: Region, right: Region): ComparisonResult.ComparisonAlgorithmResult {
 

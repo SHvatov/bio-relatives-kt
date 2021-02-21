@@ -5,7 +5,7 @@ package bio.relatives.common.comparator
  */
 interface CompareCtx {
     /**
-     * Algorithm, which will be used for the comparison of the genomes.
+     * Method, which will be used for the comparison of the genomes.
      */
-    val algorithm: GenomeComparatorAlgorithm
+    val comparisonMethod: GenomeComparisonMethod
 }

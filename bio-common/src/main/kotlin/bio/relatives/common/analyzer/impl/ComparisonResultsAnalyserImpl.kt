@@ -1,84 +1,89 @@
 package bio.relatives.common.analyzer.impl
 
 import bio.relatives.common.analyzer.ComparisonResultsAnalyser
-import bio.relatives.common.analyzer.impl.ComparisonResultsAnalyserImpl.AnalyserCommand.PerformAnalysis
-import bio.relatives.common.analyzer.impl.ComparisonResultsAnalyserImpl.AnalyserCommand.StoreResult
+import bio.relatives.common.comparator.GenomeComparisonResult
 import bio.relatives.common.model.AnalysisResult
 import bio.relatives.common.model.AnalysisResult.ChromosomeResult
 import bio.relatives.common.model.AnalysisResult.GenomeResult
 import bio.relatives.common.model.ComparisonParticipants
-import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
 import bio.relatives.common.utils.calculateAdditionRelativeErrorRate
 import bio.relatives.common.utils.calculateAverageQuality
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.actor
+import com.shvatov.processor.CoroutineScopeAware
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * @author shvatov
  */
 @ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
-class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
+class ComparisonResultsAnalyserImpl(
+    /**
+     * Input channel, that will contain the results of the genome comparison
+     * step of the algorithm.
+     */
+    override val inputChannel: ReceiveChannel<GenomeComparisonResult>,
+
+    /**
+     * Scope of the parent coroutine this assembler is called from.
+     */
+    override val parentScope: CoroutineScope? = null
+) : ComparisonResultsAnalyser {
     /**
      * Parent scope for the execution of analysing coroutine.
      */
-    private val scope = CoroutineScope(
-        SupervisorJob() +
+    override val scope = CoroutineScope(
+        (parentScope?.coroutineContext ?: EmptyCoroutineContext) +
             CoroutineName("Analyzer") +
             Executors.newSingleThreadExecutor().asCoroutineDispatcher() +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName]}:",
-                    exception
-                )
-            }
+            CoroutineScopeAware.exceptionHandler(LOG)
     )
 
     /**
-     * Actor, which is responsible for the storage and analysis of the comparison data.
+     * Deferred value, which will contain the results of the analysis
+     * after all data from [inputChannel] has been processed.
      */
-    private val analyser = scope.actor<AnalyserCommand>(
-        capacity = CHANNEL_CAPACITY
-    ) {
-        val storedResults =
-            mutableMapOf<ComparisonParticipants, MutableList<ComparisonAlgorithmResult>>()
-        consumeEach {
-            when (it) {
-                is StoreResult -> with(it) {
-                    result.forEach { (participants, algorithmResult) ->
-                        storedResults.putIfAbsent(participants, mutableListOf())
-                        storedResults.getValue(participants).add(algorithmResult)
+    private val analysisResult: CompletableDeferred<AnalysisResult> = CompletableDeferred()
+
+    init {
+        /**
+         * On init we start a separate coroutine, which consumes data from `inputChannel` till the very end,
+         * and after that completes `analysisResult` with the value computed by `performAnalysis` method.
+         */
+        scope.launch {
+            val storedResults = mutableMapOf<ComparisonParticipants, MutableList<ComparisonAlgorithmResult>>()
+            inputChannel.consumeEach {
+                with(it) {
+                    if (it.isSuccess) {
+                        result!!.forEach { (participants, algorithmResult) ->
+                            storedResults.putIfAbsent(participants, mutableListOf())
+                            storedResults.getValue(participants).add(algorithmResult)
+                        }
                     }
                 }
-                is PerformAnalysis ->
-                    it.result.complete(
-                        performAnalysis(storedResults)
-                    )
             }
+
+            analysisResult.complete(
+                performAnalysis(storedResults)
+            )
         }
     }
 
-    override fun store(result: ComparisonResult) {
-        scope.launch {
-            analyser.send(StoreResult(result))
-        }
-    }
-
-    override fun analyse(): AnalysisResult = runBlocking {
-        val deferredResult = CompletableDeferred<AnalysisResult>()
-        analyser.send(PerformAnalysis(deferredResult))
-        return@runBlocking deferredResult.await()
-    }
-
-    override fun close() {
-        analyser.close()
-        scope.cancel()
-    }
+    override suspend fun analyse(): AnalysisResult = analysisResult.await()
 
     /**
      * Analyses the [storedResults] for each pair of roles asynchronously and returns
@@ -141,26 +146,7 @@ class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
         }
     }
 
-    /**
-     * Defines the hierarchy of sealed classes, that represent the tasks,
-     * that [ComparisonResultsAnalyser] inner actor [analyser] supports.
-     */
-    private sealed class AnalyserCommand {
-        /**
-         * Adds the result to the coroutine-local synchronized map.
-         */
-        class StoreResult(val result: ComparisonResult) : AnalyserCommand()
-
-        /**
-         * Starts the analysis of the accumulated data.
-         * Returns the result in [CompletableDeferred].
-         */
-        class PerformAnalysis(val result: CompletableDeferred<AnalysisResult>) : AnalyserCommand()
-    }
-
     private companion object {
         val LOG: Logger = LoggerFactory.getLogger(ComparisonResultsAnalyser::class.java)
-
-        const val CHANNEL_CAPACITY = 10
     }
 }

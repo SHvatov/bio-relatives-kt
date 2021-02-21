@@ -13,7 +13,6 @@ import com.shvatov.processor.CoroutineScopeAware
 import com.shvatov.processor.config.TaskProcessorConfiguration
 import com.shvatov.processor.impl.TaskProcessorImpl
 import com.shvatov.processor.use
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,12 +53,7 @@ class GenomeAssemblerImpl(
         (parentScope?.coroutineContext ?: EmptyCoroutineContext) +
             CoroutineName("Assembler") +
             Executors.newFixedThreadPool(DEFAULT_ASSEMBLY_THREADS).asCoroutineDispatcher() +
-            CoroutineExceptionHandler { ctx, exception ->
-                LOG.error(
-                    "Exception occurred while processing data in ${ctx[CoroutineName]}:",
-                    exception
-                )
-            }
+            CoroutineScopeAware.exceptionHandler(LOG)
     )
 
     /**
@@ -105,6 +99,9 @@ class GenomeAssemblerImpl(
         assemblyToolsPool.close()
     }
 
+    /**
+     * Performs synchronized assembly of the genomes from [feature] by provided [tools].
+     */
     private fun assembleGenomes(feature: Feature, tools: AssemblyTools): RegionBatch {
         val assemblyResults = assembleCtx.bamFilePaths.keys.map { role ->
             val (parser, assembler) = tools.parserByRole.getValue(role) to tools.assembler

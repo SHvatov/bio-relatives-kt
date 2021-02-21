@@ -1,11 +1,17 @@
 package bio.relatives.common.assembler
 
-import bio.relatives.common.model.RoleAware.Role
-import java.nio.file.Path
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * @author shvatov
  */
 interface GenomeAssemblerFactory {
-    fun create(featureFilePath: Path, bamFilePaths: Map<Role, Path>): GenomeAssembler
+    /**
+     * Creates a [GenomeAssembler] based on the provided [assemblyCtx] and
+     * [parentScope] id such is present.
+     */
+    fun create(
+        assemblyCtx: AssemblyCtx,
+        parentScope: CoroutineScope? = null
+    ): GenomeAssembler
 }

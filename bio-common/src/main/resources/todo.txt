@@ -1,0 +1,4 @@
+todo: add negative tests for processors
+todo: for analyzer add tests for vales calculation
+todo: add integration tests for runner
+todo: add one big unit test for runner

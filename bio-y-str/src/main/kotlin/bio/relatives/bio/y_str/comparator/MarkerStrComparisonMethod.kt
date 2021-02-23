@@ -1,7 +1,7 @@
 package bio.relatives.bio.y_str.comparator
 
 import bio.relatives.bio.y_str.model.MarkerFeature
-import bio.relatives.common.comparator.GenomeComparatorAlgorithm
+import bio.relatives.common.comparator.GenomeComparisonMethod
 import bio.relatives.common.model.ComparisonResult
 import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
@@ -13,7 +13,7 @@ import java.lang.Math.max
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
-class MarkerStrComparatorAlgorithm : GenomeComparatorAlgorithm {
+class MarkerStrComparisonMethod : GenomeComparisonMethod {
 
     override fun compare(
         feature: Feature,

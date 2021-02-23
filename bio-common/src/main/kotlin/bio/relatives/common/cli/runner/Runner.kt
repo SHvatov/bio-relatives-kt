@@ -5,7 +5,7 @@ package bio.relatives.common.cli.runner
  */
 interface Runner {
     /**
-     * Runes our application logic with [context]
+     * Runes our application logic with provided [ctx].
      */
-    fun run(context: RunnerCtx)
+    fun run(ctx: RunnerCtx)
 }

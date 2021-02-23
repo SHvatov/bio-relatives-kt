@@ -9,18 +9,18 @@ import kotlin.test.assertEquals
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
-class BioDistanceGenomeComparatorAlgorithmTest {
+class BioDistanceGenomeComparisonMethodTest {
 
     companion object {
         private val LEFT_ROLE = RoleAware.Role.FATHER
         private const val LEFT_SEQUENCE = "a*gctagctcgtaacg*ttata"
 
         private val LEFT_BASE_QUALITIES = arrayOf(
-                25.0, 50.0, 30.0, 10.0, 40.0,
-                50.0, 90.0, 70.0, 1.0, 2.0,
-                4.0, 12.0, 13.0, 14.0,
-                15.0, 16.0, 17.0, 18.0, 19.0,
-                20.0, 21.0, 22.0
+            25.0, 50.0, 30.0, 10.0, 40.0,
+            50.0, 90.0, 70.0, 1.0, 2.0,
+            4.0, 12.0, 13.0, 14.0,
+            15.0, 16.0, 17.0, 18.0, 19.0,
+            20.0, 21.0, 22.0
         )
 
         private val RIGHT_BASE_QUALITIES = arrayOf(

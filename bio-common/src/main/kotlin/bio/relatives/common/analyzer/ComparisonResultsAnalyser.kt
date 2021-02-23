@@ -1,20 +1,25 @@
 package bio.relatives.common.analyzer
 
+import bio.relatives.common.comparator.GenomeComparisonResult
 import bio.relatives.common.model.AnalysisResult
-import bio.relatives.common.model.ComparisonResult
+import com.shvatov.processor.CoroutineParentScopeAware
+import com.shvatov.processor.CoroutineScopeAware
+import kotlinx.coroutines.channels.ReceiveChannel
 
 /**
  * @author shvatov
  */
-interface ComparisonResultsAnalyser : AutoCloseable {
+interface ComparisonResultsAnalyser : CoroutineParentScopeAware, CoroutineScopeAware {
     /**
-     * Stores the result of the comparison in local storage.
+     * Input channel, that will contain the results of the genome comparison
+     * step of the algorithm.
      */
-    fun store(result: ComparisonResult)
+    val inputChannel: ReceiveChannel<GenomeComparisonResult>
 
     /**
      * Performs the analysis of the results, that have been accumulated
-     * at the given point.
+     * after processing all the data from [inputChannel]. Suspends current
+     * coroutine till that moment.
      */
-    fun analyse(): AnalysisResult
+    suspend fun analyse(): AnalysisResult
 }

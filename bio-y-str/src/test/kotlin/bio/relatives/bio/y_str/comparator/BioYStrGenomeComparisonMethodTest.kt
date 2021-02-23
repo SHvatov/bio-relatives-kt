@@ -3,14 +3,14 @@ package bio.relatives.bio.y_str.comparator
 import bio.relatives.bio.y_str.model.MarkerFeature
 import bio.relatives.common.model.Region
 import bio.relatives.common.model.RoleAware
+import junit.framework.Assert.assertEquals
 import org.junit.Test
 import java.util.regex.Pattern
-import kotlin.test.assertEquals
 
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
-class BioYStrGenomeComparatorAlgorithmTest {
+class BioYStrGenomeComparisonMethodTest {
 
     companion object {
         private val LEFT_ROLE = RoleAware.Role.FATHER
@@ -46,7 +46,7 @@ class BioYStrGenomeComparatorAlgorithmTest {
         private val RIGHT =
             Region(RIGHT_ROLE, RIGHT_SEQUENCE, RIGHT_BASE_QUALITIES, GENE, CHR, START, END)
 
-        private val BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM = MarkerStrComparatorAlgorithm()
+        private val BIO_Y_STR_GENOME_COMPARATOR_ALGORITHM = MarkerStrComparisonMethod()
 
         private val Y_STR_FEATURE = MarkerFeature(GENE, CHR, START, END, REPEAT_MOTIF)
 

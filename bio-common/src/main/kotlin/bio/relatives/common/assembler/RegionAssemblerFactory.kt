@@ -5,7 +5,7 @@ package bio.relatives.common.assembler
  */
 interface RegionAssemblerFactory {
     /**
-     * Creates an instance of the [RegionAssembler] defines in the plugged in module.
+     * Creates an instance of the [RegionAssembler] defined in the plugged in module.
      */
     fun create(): RegionAssembler
 }

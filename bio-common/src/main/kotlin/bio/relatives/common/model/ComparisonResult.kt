@@ -6,8 +6,7 @@ import bio.relatives.common.model.ComparisonResult.ComparisonAlgorithmResult
  * Represents the result of the comparison of two or more genomes between each other.
  * @author shvatov
  */
-class ComparisonResult :
-    MutableMap<ComparisonParticipants, ComparisonAlgorithmResult> by HashMap() {
+class ComparisonResult : MutableMap<ComparisonParticipants, ComparisonAlgorithmResult> by HashMap() {
     /**
      * @author shvatov
      */

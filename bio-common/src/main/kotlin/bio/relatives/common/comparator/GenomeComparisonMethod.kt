@@ -5,10 +5,9 @@ import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
 
 /**
- * Represents comparison algorithm, which can be used for genome comparison.
  * @author shvatov
  */
-interface GenomeComparatorAlgorithm {
+interface GenomeComparisonMethod {
     /**
      * Compares provided [Region] instances and returns the result as [ComparisonAlgorithmResult].
      */

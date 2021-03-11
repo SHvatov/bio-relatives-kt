@@ -6,12 +6,14 @@ import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
 import bio.relatives.common.utils.calculateAverageQuality
 import bio.relatives.common.utils.getNormalizedAlignments
+import org.springframework.stereotype.Component
 import java.lang.Integer.max
 import java.lang.Integer.min
 
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
+@Component("LevensteinDistanceAlgorithm")
 class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
 
     override fun compare(feature: Feature, left: Region, right: Region): ComparisonResult.ComparisonAlgorithmResult {
@@ -30,7 +32,10 @@ class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
         for (l in 1 until f.length + 1) {
             current[0] = l
             for (k in 1 until s.length + 1) {
-                current[k] = min(min(current[k - 1] + 1, table[k] + 1), min(table[k] + 1, table[k - 1] + if (f[l - 1] == s[k - 1]) 0 else 1))
+                current[k] = min(
+                    min(current[k - 1] + 1, table[k] + 1),
+                    min(table[k] + 1, table[k - 1] + if (f[l - 1] == s[k - 1]) 0 else 1)
+                )
             }
             table = current.copyOf(current.size)
         }
@@ -42,5 +47,4 @@ class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
 
         return ComparisonResult.ComparisonAlgorithmResult(feature, similarityPercent, errorRate)
     }
-
 }

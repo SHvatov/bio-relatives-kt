@@ -7,12 +7,14 @@ import bio.relatives.common.model.Feature
 import bio.relatives.common.model.Region
 import bio.relatives.common.utils.calculateAverageQuality
 import bio.relatives.common.utils.getNormalizedAlignments
+import org.springframework.stereotype.Component
 import java.lang.Integer.min
 import java.lang.Math.max
 
 /**
  * @author Created by Vladislav Marchenko on 30.01.2021
  */
+@Component("MarkerStrComparisonMethod")
 class MarkerStrComparisonMethod : GenomeComparisonMethod {
 
     override fun compare(

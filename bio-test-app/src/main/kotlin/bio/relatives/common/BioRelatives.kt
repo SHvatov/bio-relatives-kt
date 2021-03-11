@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.ComponentScan
 
 /**
  * Start point for our application
  * @author Created by Vladislav Marchenko on 06.02.2021
  */
+@ComponentScan(basePackages = ["bio.relatives"])
 @SpringBootApplication
 open class BioRelatives : CommandLineRunner {
     @Autowired

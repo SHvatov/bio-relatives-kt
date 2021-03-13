@@ -19,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.nio.file.Path
+import kotlin.system.measureNanoTime
 
 /**
  * @author Created by Vladislav Marchenko on 06.02.2021
@@ -33,17 +34,21 @@ class RunnerImpl @Autowired constructor(
     private val comparatorFactory: GenomeComparatorFactory,
     private val analyserFactory: ComparisonResultsAnalyserFactory
 ) : Runner {
-    override fun run(ctx: RunnerCtx) = runBlocking {
-        val assembler = prepareAssembler(ctx)
+    override fun run(ctx: RunnerCtx): Unit = runBlocking {
+        measureNanoTime {
+            val assembler = prepareAssembler(ctx)
 
-        assembler.use { asm ->
-            val assemblyChannel = asm.assemble()
-            val comparator = prepareComparator(assemblyChannel)
+            assembler.use { asm ->
+                val assemblyChannel = asm.assemble()
+                val comparator = prepareComparator(assemblyChannel)
 
-            val comparisonChannel = comparator.compare()
-            val analyzer = analyserFactory.create(comparisonChannel, this)
+                val comparisonChannel = comparator.compare()
+                val analyzer = analyserFactory.create(comparisonChannel, this)
 
-            println(analyzer.analyse())
+                println(analyzer.analyse())
+            }
+        }.also {
+            println("Time spent: $it")
         }
     }
 

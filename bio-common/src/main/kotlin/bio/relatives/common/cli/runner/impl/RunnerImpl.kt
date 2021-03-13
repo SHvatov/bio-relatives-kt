@@ -10,10 +10,10 @@ import bio.relatives.common.comparator.CompareCtxFactory
 import bio.relatives.common.comparator.GenomeComparator
 import bio.relatives.common.comparator.GenomeComparatorFactory
 import bio.relatives.common.model.RoleAware
-import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.nio.file.Path
+import kotlin.system.measureNanoTime
 
 /**
  * @author Created by Vladislav Marchenko on 06.02.2021
@@ -26,15 +26,19 @@ class RunnerImpl @Autowired constructor(
     private val comparatorFactory: GenomeComparatorFactory,
     private val analyserFactory: ComparisonResultsAnalyserFactory
 ) : Runner {
-    override fun run(ctx: RunnerCtx) = runBlocking {
-        val assembler = prepareAssembler(ctx)
-        val assemblyResults = assembler.assemble()
-        val comparator = prepareComparator()
 
-        val comparisonResults = comparator.compare(assemblyResults)
-        val analyzer = analyserFactory.create()
+    override fun run(ctx: RunnerCtx) {
+        val time = measureNanoTime {
+            val assembler = prepareAssembler(ctx)
+            val assemblyResults = assembler.assemble()
+            val comparator = prepareComparator()
 
-        println(analyzer.analyse(comparisonResults))
+            val comparisonResults = comparator.compare(assemblyResults)
+            val analyzer = analyserFactory.create()
+
+            println(analyzer.analyse(comparisonResults))
+        }
+        println(time)
     }
 
     private fun prepareAssembler(ctx: RunnerCtx): GenomeAssembler {

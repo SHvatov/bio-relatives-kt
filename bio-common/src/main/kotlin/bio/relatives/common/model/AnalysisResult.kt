@@ -1,6 +1,7 @@
 package bio.relatives.common.model
 
 import bio.relatives.common.model.AnalysisResult.GenomeResult
+import java.util.stream.Collectors
 
 /**
  * @author shvatov
@@ -27,4 +28,10 @@ class AnalysisResult : MutableMap<ComparisonParticipants, GenomeResult> by HashM
         val averageSimilarity: Double,
         val averageErrorRate: Double,
     ) : ChromosomeAware
+
+    override fun toString(): String {
+        return keys.stream()
+            .map { key -> key.toString() + "=" + get(key) }
+            .collect(Collectors.joining(", ", "{", "}"))
+    }
 }

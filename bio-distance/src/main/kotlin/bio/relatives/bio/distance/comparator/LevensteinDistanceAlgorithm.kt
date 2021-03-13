@@ -20,28 +20,32 @@ class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
 
         val temp = getNormalizedAlignments(left.sequence, right.sequence)
 
-        val (f, s) = temp
+        val (first, second) = temp
 
-        var table = IntArray(s.length + 1)
-
-        for (l in 0 until s.length + 1) {
-            table[l] = l
+        if (first.isEmpty() || second.isEmpty()) {
+            return ComparisonResult.ComparisonAlgorithmResult(feature, 0.0, 100.0)
         }
 
-        val current = IntArray(s.length + 1)
-        for (l in 1 until f.length + 1) {
-            current[0] = l
-            for (k in 1 until s.length + 1) {
-                current[k] = min(
-                    min(current[k - 1] + 1, table[k] + 1),
-                    min(table[k] + 1, table[k - 1] + if (f[l - 1] == s[k - 1]) 0 else 1)
+        var table = IntArray(second.length + 1)
+
+        for (i in 0 until second.length + 1) {
+            table[i] = i
+        }
+
+        val current = IntArray(second.length + 1)
+        for (i in 1 until first.length + 1) {
+            current[0] = i
+            for (j in 1 until second.length + 1) {
+                current[j] = min(
+                    min(current[j - 1] + 1, table[j] + 1),
+                    min(table[j] + 1, table[j - 1] + if (first[i - 1] == second[j - 1]) 0 else 1)
                 )
             }
             table = current.copyOf(current.size)
         }
 
-        val difference = current[s.length]
-        val length = max(f.length, s.length)
+        val difference = current[second.length]
+        val length = max(first.length, second.length)
         val similarityPercent = 100.0 - difference.toDouble() / length.toDouble() * 100.0
         val errorRate = 100 - calculateAverageQuality(listOf(*left.qualities, *right.qualities))
 

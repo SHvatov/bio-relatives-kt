@@ -2,11 +2,9 @@ package bio.relatives.common.cli.command
 
 import bio.relatives.common.cli.runner.Runner
 import bio.relatives.common.cli.runner.RunnerCtx
-import bio.relatives.common.model.ComparatorType
 import kotlinx.cli.ArgType
 import kotlinx.cli.ExperimentalCli
 import kotlinx.cli.Subcommand
-import kotlinx.cli.default
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.nio.file.Paths
@@ -22,12 +20,6 @@ import java.nio.file.Paths
 class ComparisonCommand @Autowired constructor(
         private val runner: Runner
 ) : Subcommand(COMPARISON_COMMAND_NAME, COMPARISON_COMMAND_DESCRIPTION) {
-
-    private val comparatorType by option(
-            ArgType.Choice<ComparatorType>(),
-            shortName = COMPARATOR_TYPE_OPTION_SHORT_NAME,
-            description = COMPARATOR_TYPE_OPTION_DESCRIPTION
-    ).default(ComparatorType.NAIVE)
 
     private val pathToFeatureFile by option(
             ArgType.String,
@@ -56,7 +48,6 @@ class ComparisonCommand @Autowired constructor(
     override fun execute() {
         runner.run(
                 RunnerCtx(
-                        comparatorType,
                         Paths.get(pathToFeatureFile!!),
                         Paths.get(pathToFatherFile!!),
                         Paths.get(pathToMotherFile!!),

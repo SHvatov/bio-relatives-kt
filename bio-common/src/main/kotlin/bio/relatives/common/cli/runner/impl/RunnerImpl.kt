@@ -4,17 +4,12 @@ import bio.relatives.common.analyzer.ComparisonResultsAnalyserFactory
 import bio.relatives.common.assembler.AssemblyCtxFactory
 import bio.relatives.common.assembler.GenomeAssembler
 import bio.relatives.common.assembler.GenomeAssemblerFactory
-import bio.relatives.common.assembler.GenomeAssemblyResult
 import bio.relatives.common.cli.runner.Runner
 import bio.relatives.common.cli.runner.RunnerCtx
 import bio.relatives.common.comparator.CompareCtxFactory
 import bio.relatives.common.comparator.GenomeComparator
 import bio.relatives.common.comparator.GenomeComparatorFactory
 import bio.relatives.common.model.RoleAware
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -24,8 +19,6 @@ import java.nio.file.Path
  * @author Created by Vladislav Marchenko on 06.02.2021
  */
 @Component
-@ObsoleteCoroutinesApi
-@ExperimentalCoroutinesApi
 class RunnerImpl @Autowired constructor(
     private val assemblyCtxFactory: AssemblyCtxFactory,
     private val assemblerFactory: GenomeAssemblerFactory,
@@ -35,28 +28,23 @@ class RunnerImpl @Autowired constructor(
 ) : Runner {
     override fun run(ctx: RunnerCtx) = runBlocking {
         val assembler = prepareAssembler(ctx)
+        val assemblyResults = assembler.assemble()
+        val comparator = prepareComparator()
 
-        assembler.use { asm ->
-            val assemblyChannel = asm.assemble()
-            val comparator = prepareComparator(assemblyChannel)
+        val comparisonResults = comparator.compare(assemblyResults)
+        val analyzer = analyserFactory.create()
 
-            val comparisonChannel = comparator.compare()
-            val analyzer = analyserFactory.create(comparisonChannel, this)
-
-            println(analyzer.analyse())
-        }
+        println(analyzer.analyse(comparisonResults))
     }
 
-    private fun CoroutineScope.prepareAssembler(ctx: RunnerCtx): GenomeAssembler {
+    private fun prepareAssembler(ctx: RunnerCtx): GenomeAssembler {
         val assemblyCtx = assemblyCtxFactory.create(ctx.pathToFeatureFile, getRoleMap(ctx))
-        return assemblerFactory.create(assemblyCtx, this)
+        return assemblerFactory.create(assemblyCtx)
     }
 
-    private fun CoroutineScope.prepareComparator(
-        assemblyChannel: ReceiveChannel<GenomeAssemblyResult>
-    ): GenomeComparator {
+    private fun prepareComparator(): GenomeComparator {
         val compareCtx = compareCtxFactory.create()
-        return comparatorFactory.create(compareCtx, assemblyChannel, this)
+        return comparatorFactory.create(compareCtx)
     }
 
     private fun getRoleMap(ctx: RunnerCtx): Map<RoleAware.Role, Path> = hashMapOf(

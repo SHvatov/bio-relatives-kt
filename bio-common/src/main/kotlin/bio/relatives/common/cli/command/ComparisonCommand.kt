@@ -61,9 +61,6 @@ class ComparisonCommand @Autowired constructor(
 
         const val COMPARISON_COMMAND_DESCRIPTION = "Comparison of three genomes"
 
-        const val COMPARATOR_TYPE_OPTION_SHORT_NAME = "ct"
-        const val COMPARATOR_TYPE_OPTION_DESCRIPTION = "Type of comparator"
-
         const val PATH_TO_FEATURE_FILE_OPTION_SHORT_NAME = "ff"
         const val PATH_TO_FEATURE_FILE_OPTION_DESCRIPTION = "Path to feature file"
 

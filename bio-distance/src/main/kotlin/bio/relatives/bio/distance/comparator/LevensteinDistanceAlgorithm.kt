@@ -23,7 +23,7 @@ class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
         val (first, second) = temp
 
         if (first.isEmpty() || second.isEmpty()) {
-            return ComparisonResult.ComparisonAlgorithmResult(feature, 0.0, 100.0)
+            return ComparisonResult.ComparisonAlgorithmResult(feature, 0.0, 0.0)
         }
 
         var table = IntArray(second.length + 1)

@@ -73,7 +73,7 @@ class ComparisonResultsAnalyserImpl : ComparisonResultsAnalyser {
 
         val analysisResults = AnalysisResult()
         for ((participants, algorithmResults) in storedResults) {
-            analysisResults[participants] = performSingleAnalysis(algorithmResults)
+            analysisResults[participants] = performSingleAnalysis(algorithmResults.filter { it.errorRate > 0.0 })
         }
 
         return analysisResults

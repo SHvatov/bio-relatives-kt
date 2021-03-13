@@ -15,7 +15,6 @@ import java.lang.Integer.min
  */
 @Component("LevensteinDistanceAlgorithm")
 class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
-
     override fun compare(feature: Feature, left: Region, right: Region): ComparisonResult.ComparisonAlgorithmResult {
 
         val temp = getNormalizedAlignments(left.sequence, right.sequence)
@@ -23,7 +22,7 @@ class LevensteinDistanceAlgorithm : GenomeComparisonMethod {
         val (first, second) = temp
 
         if (first.isEmpty() || second.isEmpty()) {
-            return ComparisonResult.ComparisonAlgorithmResult(feature, 0.0, 0.0)
+            return ComparisonResult.ComparisonAlgorithmResult(feature, 0.0, -1.0)
         }
 
         var table = IntArray(second.length + 1)

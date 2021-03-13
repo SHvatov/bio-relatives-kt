@@ -13,19 +13,25 @@ import java.util.regex.Pattern
  */
 @Component
 class MarkerFeatureParser : AbstractFeatureParser() {
+    private val patternByMotif = mutableMapOf<String, Pattern>()
+
     override fun createFeature(startPos: Int, endPos: Int, rows: Array<String>): Feature {
         val chr = rows[0]
         val gene = rows[3]
-        val repeatMotif = Pattern.compile(rows[4].toLowerCase())
+        val repeatMotif = rows[4].toLowerCase()
 
-        return MarkerFeature(gene, chr, startPos, endPos, repeatMotif)
+        patternByMotif.computeIfAbsent(repeatMotif) {
+            Pattern.compile(repeatMotif)
+        }
+
+        return MarkerFeature(gene, chr, startPos, endPos, patternByMotif.getValue(repeatMotif))
     }
 
     override fun validateRows(rows: Array<String>, featureFilePath: Path) {
         require(rows.size == 5 && rows[4].all { ALLOWED_NUCLEOTIDES.contains(it.toLowerCase()) }) {
             "Error occurred during reading from the file [$featureFilePath]: " +
-                    "incorrect number of rows in the table. " +
-                    "Expected 5 (chrom, start, end, gene name, repeatMotif), got ${rows.size}"
+                "incorrect number of rows in the table. " +
+                "Expected 5 (chrom, start, end, gene name, repeatMotif), got ${rows.size}"
         }
     }
 }

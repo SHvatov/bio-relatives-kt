@@ -137,7 +137,7 @@ class ComparisonResultsAnalyserImpl(
         val deferredAnalysisResults = mutableMapOf<ComparisonParticipants, Deferred<GenomeResult>>()
         for ((participants, algorithmResults) in storedResults) {
             deferredAnalysisResults[participants] = scope.async {
-                performAnalysisAsync(algorithmResults)
+                performAnalysisAsync(algorithmResults.filter { it.errorRate > 0.0 })
             }
         }
 

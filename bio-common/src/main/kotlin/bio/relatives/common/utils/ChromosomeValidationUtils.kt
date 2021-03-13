@@ -20,7 +20,7 @@ fun validateChrom(aware: ChromosomeAware) {
 
         require(chromosome in ALLOWED_CHROMOSOMES) {
             "\"chromosome\" must be one of the following: " +
-                ALLOWED_CHROMOSOMES.joinToString()
+                    ALLOWED_CHROMOSOMES.joinToString()
         }
     }
 }
@@ -46,6 +46,7 @@ const val ALLOWED_NUCLEOTIDES = "agct"
 
 const val UNKNOWN_NUCLEOTIDE = '*'
 
-val ALLOWED_CHROMOSOMES = (1..22).map { "chr$it" } + listOf("chrX", "chrY", "chrMT")
+val ALLOWED_CHROMOSOMES = (1..22).flatMap { listOf(it.toString(), "chr$it") } +
+        listOf("chrX", "chrY", "chrMT", "X", "Y", "MT", "M")
 
 val GENE_NAME_PATTERN: Pattern = Pattern.compile("[a-zA-Z0-9.\\-_+]*")
